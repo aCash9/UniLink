@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/custom_home_selector"
+        android:title="Home" />
+    <item
+        android:id="@+id/marketplace"
+        android:title="Market Place"
+        android:icon="@drawable/custom_market_selector"/>
+
+    <item
+        android:id="@+id/search"
+        android:title="Search"
+        android:icon="@drawable/custom_search_selector"/>
+
+    <item
+        android:id="@+id/living"
+        android:title="Living"
+        android:icon="@drawable/custom_living_selector"/>
+    <item
+        android:id="@+id/menu"
+        android:title="Setting"
+        android:icon="@drawable/custom_setting_selector"/>
+</menu>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">UniLink</string>
+    <string name="image">Image used in login pages\n</string>
+    <string name="name">UniLink</string>
+    <string name="description">Your ultimate campus campanion,\nconnecting students to the world.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="creator_1">Akash Srivastava</string>
+    <string name="creator_2">Suraj G Meharwade</string>
+</resources>

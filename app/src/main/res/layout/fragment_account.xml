@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".AccountFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:background="@color/black">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/black"
+                    android:drawablePadding="10dp"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:text="Setting"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:letterSpacing="0.05"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/appbar"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        />
+    <Button
+        android:id="@+id/account"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Account"
+        android:textColor="@color/white"
+        android:layout_below="@id/line1"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/line7"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/account"
+        android:background="@color/white"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:orientation="horizontal"
+        />
+
+    <Button
+        android:id="@+id/myPosts"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/montserrat"
+        android:text="My Posts"
+        android:textColor="@color/white"
+        android:layout_below="@id/line7"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/myPosts"
+        android:layout_marginStart="20dp"
+        android:orientation="horizontal"
+        />
+
+    <Button
+        android:id="@+id/notes"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/montserrat"
+        android:text="Notes"
+        android:textColor="@color/white"
+        android:layout_below="@id/myPosts"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/line3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/notes"
+        android:background="@color/white"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:orientation="horizontal"
+        />
+
+    <Button
+        android:id="@+id/help"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:text="Help"
+        android:textAlignment="textStart"
+        android:layout_marginStart="20dp"
+        android:textColor="@color/white"
+        android:layout_below="@id/line3"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/line4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/help"
+        android:background="@color/white"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:orientation="horizontal"
+        />
+
+    <Button
+        android:id="@+id/contribute"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:text="Contribute"
+        android:textColor="@color/white"
+        android:textAlignment="textStart"
+        android:layout_marginStart="20dp"
+        android:layout_below="@id/line4"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/line5"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/contribute"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_logout_btn"
+        android:layout_centerHorizontal="true"
+        android:text="Logout"
+        android:textColor="@color/white"
+        android:fontFamily="@font/montserrat_semibold"
+        android:textAllCaps="false"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        android:layout_below="@+id/line5"/>
+
+    <TextView
+        android:id="@+id/support"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:text="Follow us on Linkedln🔗"
+        android:layout_above="@id/linear"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+    
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/footer"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/akash"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/creator_1"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/suraj"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/creator_2"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line6"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/linear"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        />
+
+    <TextView
+        android:id="@+id/footer"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:text="Made with ❤️ by your fellow developers"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:textSize="15sp" />
+</RelativeLayout>

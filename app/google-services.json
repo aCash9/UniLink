@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "453264708233",
+    "firebase_url": "https://loginnregistration-fce7e-default-rtdb.firebaseio.com",
+    "project_id": "loginnregistration-fce7e",
+    "storage_bucket": "loginnregistration-fce7e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453264708233:android:f3f2fe3ba0406d7a602c58",
+        "android_client_info": {
+          "package_name": "com.example.loginnregistration"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByQWVxEDw8KAx9LDmWqakBHXmX7TQtjXg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453264708233:android:c9c5a10a1edf4a74602c58",
+        "android_client_info": {
+          "package_name": "com.example.unilink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByQWVxEDw8KAx9LDmWqakBHXmX7TQtjXg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
