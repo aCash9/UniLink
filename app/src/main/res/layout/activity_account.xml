@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".AccountActivity">
+    tools:context=".activity.AccountActivity">
 
 
         <RelativeLayout
@@ -129,6 +129,7 @@
 
                 <EditText
                     android:id="@+id/username"
+                    android:autofillHints="View.AUTOFILL_HINT_NAME"
                     android:text=""
                     android:layout_weight="1"
                     android:layout_width="match_parent"

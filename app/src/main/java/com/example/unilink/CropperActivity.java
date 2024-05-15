@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.model.AspectRatio;
 
 import java.io.File;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class CropperActivity extends AppCompatActivity {
     String result;
     Uri uri;
 
+    String type;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +38,21 @@ public class CropperActivity extends AppCompatActivity {
         String dest_uri = new StringBuilder(UUID.randomUUID().toString()).append(".jpg").toString();
 
         UCrop.Options options = new UCrop.Options();
-        options.setCircleDimmedLayer(true);
-        options.setShowCropFrame(false);
-        options.setShowCropGrid(false);
+        if(type.equals("dp")) {
+            options.setCircleDimmedLayer(true);
+            options.setShowCropFrame(false);
+            options.setShowCropGrid(false);
+        } else {
+            options.setFreeStyleCropEnabled(false);
+            options.setAspectRatioOptions(
+                    0, // Index of the aspect ratio to be selected by default
+                    new AspectRatio("Square", 1, 1), // Square aspect ratio
+                    new AspectRatio("4:3", 4, 3) // 4:3 aspect ratio
+            );
+            options.setShowCropFrame(true); // Show crop frame
+            options.setShowCropGrid(true); // Show crop grid
+        }
+
 
         UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), dest_uri)))
                 .withOptions(options)
@@ -52,6 +66,8 @@ public class CropperActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent.getExtras() != null) {
             result = intent.getStringExtra("data");
+            type = intent.getStringExtra("crop");
+
             uri = Uri.parse(result);
         }
     }

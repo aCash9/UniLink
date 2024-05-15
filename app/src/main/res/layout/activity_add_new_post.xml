@@ -6,7 +6,7 @@
     android:background="@color/black"
     android:id="@+id/main"
     android:layout_height="match_parent"
-    tools:context=".AddNewPost">
+    tools:context=".activity.AddNewPostActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -52,30 +52,15 @@
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+     <ImageView
+         android:id="@+id/image"
+         android:layout_below="@id/appbar"
+         android:layout_width="match_parent"
+         android:layout_height="400dp"
+         android:scaleType="fitCenter"
+         android:src="@drawable/add_image_png"
+         tools:ignore="ContentDescription" />
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/appbar"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:contentDescription="user uplaoded image"
-        android:scaleType="centerCrop"
-        android:src="@drawable/add_image_png"
-        />
-
-    <VideoView
-        android:id="@+id/video"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/appbar"
-        android:layout_marginStart="10dp"
-        android:visibility="invisible"
-        android:layout_marginEnd="10dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/add_image_png"
-        />
 
     <EditText
         android:id="@+id/caption"
@@ -92,11 +77,12 @@
         android:inputType="text"
         android:minHeight="48dp"
         android:text=""
-        android:textColor="@color/white"
+        android:textColor="@color/purple"
         android:textColorHint="@color/purple"
         android:textSize="18sp" />
 
     <LinearLayout
+        android:id="@+id/linear"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_marginStart="30dp"

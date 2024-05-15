@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/black"
+    android:id="@+id/main"
+    android:layout_height="match_parent"
+    tools:context=".activity.AddReelActivity">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:background="@color/black">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/back_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="backButton"
+                    android:src="@drawable/back_icon"
+                    android:background="@color/black"
+                    android:layout_alignParentStart="true"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_toEndOf="@+id/back_btn"
+                    android:id="@+id/heading"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@color/black"
+                    android:drawablePadding="10dp"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:text="Add new reel"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:letterSpacing="0.05"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_below="@id/appbar"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/media"
+                android:layout_width="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_centerHorizontal="true"
+                android:layout_height="500dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/add_new_reel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/add_reel_png"
+                    tools:ignore="ContentDescription" />
+
+                <com.google.android.exoplayer2.ui.PlayerView
+                    android:id="@+id/video"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintDimensionRatio="16:9"
+                    android:visibility="invisible"
+                    app:resize_mode="fit"/>
+            </LinearLayout>
+
+
+            <EditText
+                android:id="@+id/caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/media"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:autofillHints="caption"
+                android:background="@drawable/custom_input_field"
+                android:fontFamily="@font/montserrat"
+                android:hint="Write a caption..."
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textColorHint="@color/purple"
+                android:textSize="18sp" />
+        </RelativeLayout>
+    </ScrollView>
+
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_marginStart="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@color/black"
+        android:layout_above="@id/linear"
+        android:layout_centerHorizontal="true"
+        android:drawablePadding="10dp"
+        android:layout_marginBottom="5dp"
+        android:drawableStart="@drawable/info_icon"
+        android:fontFamily="@font/montserrat"
+        android:text="Video take a bit long time to upload"
+        android:textColor="@color/white"
+        android:textSize="14sp"/>
+
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/uploadUser"
+            android:text="Upload"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"
+            android:background="@drawable/custom_purple_button"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/uploadClub"
+            android:text="Upload for Club"
+            android:textSize="18sp"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"
+            android:background="@drawable/custom_purple_button"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/darkBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="180dp"
+        android:layout_centerInParent="true"
+        android:layout_height="180dp"
+        app:lottie_rawRes="@raw/amoung_us"
+        app:lottie_autoPlay="false"
+        android:visibility="invisible"
+        app:lottie_loop="true"/>
+
+
+</RelativeLayout>

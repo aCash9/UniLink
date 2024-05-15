@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".AccountFragment">
+    tools:context=".Fragments.AccountFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -63,36 +63,12 @@
         android:textSize="20sp" />
 
     <LinearLayout
-        android:id="@+id/line7"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/account"
-        android:background="@color/white"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:orientation="horizontal"
-        />
-
-    <Button
-        android:id="@+id/myPosts"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textStart"
-        android:layout_marginStart="20dp"
-        android:fontFamily="@font/montserrat"
-        android:text="My Posts"
-        android:textColor="@color/white"
-        android:layout_below="@id/line7"
-        android:textSize="20sp" />
-
-    <LinearLayout
         android:id="@+id/line2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/white"
         android:layout_marginEnd="20dp"
-        android:layout_below="@id/myPosts"
+        android:layout_below="@id/account"
         android:layout_marginStart="20dp"
         android:orientation="horizontal"
         />
@@ -107,7 +83,7 @@
         android:fontFamily="@font/montserrat"
         android:text="Notes"
         android:textColor="@color/white"
-        android:layout_below="@id/myPosts"
+        android:layout_below="@id/line2"
         android:textSize="20sp" />
 
     <LinearLayout

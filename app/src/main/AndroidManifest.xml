@@ -15,37 +15,43 @@
         android:theme="@style/Theme.UniLink"
         tools:targetApi="31">
         <activity
+            android:name=".activity.AddReelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".CropperActivity"
             android:exported="false" />
         <activity
-            android:name=".MyPosts"
+            android:name=".activity.MyPostsActivity"
             android:exported="false" />
         <activity
-            android:name=".AddNewPost"
+            android:name=".activity.AddNewPostActivity"
             android:exported="false" />
         <activity
-            android:name=".ContributeActivity"
+            android:name=".activity.ContributeActivity"
             android:exported="false" />
         <activity
-            android:name=".HelpActivity"
+            android:name=".activity.HelpActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountActivity"
+            android:name=".activity.AccountActivity"
             android:exported="false" />
         <activity
-            android:name=".NotesActivity"
+            android:name=".activity.NotesActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeActivity"
+            android:name=".activity.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

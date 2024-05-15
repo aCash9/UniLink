@@ -1,10 +1,12 @@
 package com.example.unilink;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.unilink.callback.ClubDetailsCallback;
+import com.example.unilink.callback.UserPostsCallback;
+import com.example.unilink.callback.booleanCallback;
+import com.example.unilink.callback.userProfileCallback;
+import com.example.unilink.objects.ClubDetails;
+import com.example.unilink.objects.UserPosts;
+import com.example.unilink.objects.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -13,21 +15,19 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FirebaseController {
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference userCol = db.collection("users");
     private final CollectionReference postCol = db.collection("posts");
+    private final CollectionReference reelsCol = db.collection("reels");
     private final CollectionReference clubPostCol = db.collection("clubPosts");
-    private final CollectionReference userPostCol = db.collection("userPosts");
+    private final CollectionReference userUploadsCol = db.collection("userUploads");
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
     public void setUserData(UserProfile profile, booleanCallback callback) {
@@ -54,7 +54,7 @@ public class FirebaseController {
                            UserProfile profile = document.toObject(UserProfile.class);
                            callback.onProfileLoaded(profile);
                        } else {
-                           UserProfile profile = new UserProfile("Error", "Error", "", "");
+                           UserProfile profile = new UserProfile("Error", "Error", "", "", "", "");
                            callback.onProfileLoaded(profile);
                        }
                    }
@@ -72,44 +72,52 @@ public class FirebaseController {
                 });
     }
 
-    public void addPost(int code, UserPosts post, booleanCallback callback) {
+    public void addPost(int code, UserPosts post, boolean type, booleanCallback callback) {
         DocumentReference docRef;
-        if(code == 0) {
-            docRef = postCol.document(post.getPostID());
-            addToUserPost(post);
+        if(type) {
+            if(code == 0) {
+                docRef = postCol.document(post.getPostID());
+                addToUserPost(post, true);
+            } else {
+                docRef = clubPostCol.document(post.getPostID());
+            }
         } else {
-            docRef = clubPostCol.document(post.getPostID());
+            if(code == 0) {
+                addToUserPost(post, false);
+            }
+            docRef = reelsCol.document(post.getPostID());
         }
+
         docRef.set(post)
                 .addOnCompleteListener(task -> {
                     callback.response(task.isSuccessful());
                 });
     }
 
-    private void addToUserPost(UserPosts post) {
-        DocumentReference docRef = userPostCol.document(post.getUsername()).collection("posts").document(post.getPostID());
+    private void addToUserPost(UserPosts post, boolean type) {
+        String col;
+        if(type) {
+            col = "posts";
+        } else {
+            col = "reels";
+        }
+        DocumentReference docRef = userUploadsCol.document(post.getUserUID()).collection(col).document(post.getPostID());
         docRef.set(post);
     }
 
 
-    public void getUserPosts(UserPostsCallback callback) {
+    public void getPosts(int code, UserPostsCallback callback) {
         ArrayList<UserPosts> list = new ArrayList<>();
-        postCol.orderBy("timestamp", Query.Direction.DESCENDING) // Assuming timestamp is the field name
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            UserPosts post = document.toObject(UserPosts.class);
-                            list.add(post);
-                        }
-                    }
-                    callback.onPostsLoaded(list);
-                });
-    }
+        CollectionReference colUsed;
+        if(code == 0) {
+            colUsed = postCol;
+        } else if(code == 1) {
+            colUsed = clubPostCol;
+        } else {
+            colUsed = reelsCol;
+        }
 
-    public void getClubPosts(UserPostsCallback callback) {
-        ArrayList<UserPosts> list = new ArrayList<>();
-        clubPostCol.orderBy("timestamp", Query.Direction.DESCENDING) // Assuming timestamp is the field name
+        colUsed.orderBy("timestamp", Query.Direction.DESCENDING) // Assuming timestamp is the field name
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -126,39 +134,37 @@ public class FirebaseController {
         DocumentReference docRef;
         if(code == 0) {
             docRef = postCol.document(postID);
-        } else {
+        } else if(code == 1){
             docRef = clubPostCol.document(postID);
+        } else {
+            docRef = reelsCol.document(postID);
         }
         docRef.update("like", FieldValue.increment(1));
     }
 
     public void addLikeToPost(int code, String postID, String uid) {
-
         Map<String, Object> likeData = new HashMap<>();
         likeData.put("userId", uid);
         likeData.put("timestamp", FieldValue.serverTimestamp());
         DocumentReference docRef;
         if(code == 0){
             docRef = postCol.document(postID).collection("likes").document(uid);
-        } else {
+        } else if(code == 1){
             docRef = clubPostCol.document(postID).collection("likes").document(uid);
+        } else {
+            docRef = reelsCol.document(postID).collection("likes").document(uid);
         }
-        docRef.set(likeData)
-                .addOnSuccessListener(aVoid -> {
-                    // Like added successfully
-                })
-                .addOnFailureListener(e -> {
-                    // Handle failure
-                });
+        docRef.set(likeData);
     }
-
 
     public void checkIfAlreadyLiked(int code, String postID, String uid, booleanCallback callback) {
         DocumentReference docRef;
         if(code == 0) {
             docRef = postCol.document(postID).collection("likes").document(uid);
-        } else {
+        } else if(code == 1) {
             docRef = clubPostCol.document(postID).collection("likes").document(uid);
+        } else {
+            docRef = reelsCol.document(postID).collection("likes").document(uid);
         }
 
         docRef.get()
@@ -210,43 +216,35 @@ public class FirebaseController {
     }
 
     public void addLikeToUserPost(UserPosts userPosts) {
-        DocumentReference docRef = userPostCol.document(userPosts.getUsername()).collection("posts").document(userPosts.getPostID());
+        DocumentReference docRef = userUploadsCol.document(userPosts.getUserUID()).collection("posts").document(userPosts.getPostID());
         docRef.update("like", FieldValue.increment(1));
     }
 
 
-    public void getMyPosts(UserPostsCallback callback) {
+    public void getMyPosts(String uid, UserPostsCallback callback) {
         ArrayList<UserPosts> posts = new ArrayList<>();
-        FirebaseUser user = auth.getCurrentUser();
 
-        getUserData(userProfile -> {
-            if(userProfile != null) {
-                String username = userProfile.getUsername();
-                userPostCol.document(username).collection("posts")
-                        .get()
-                        .addOnCompleteListener(task1 -> {
-                            if(task1.isSuccessful()) {
-                                if(!task1.getResult().isEmpty()) {
-                                    for(DocumentSnapshot document : task1.getResult()) {
-                                        UserPosts post = document.toObject(UserPosts.class);
-                                        posts.add(post);
-                                    }
-                                }
-                                callback.onPostsLoaded(posts);
-                            } else {
-                                callback.onPostsLoaded(posts);
+        userUploadsCol.document(uid).collection("posts")
+                .get()
+                .addOnCompleteListener(task1 -> {
+                    if(task1.isSuccessful()) {
+                        if(!task1.getResult().isEmpty()) {
+                            for(DocumentSnapshot document : task1.getResult()) {
+                                UserPosts post = document.toObject(UserPosts.class);
+                                posts.add(post);
                             }
-                        });
-            } else {
-                callback.onPostsLoaded(posts);
-            }
-        });
+                        }
+                        callback.onPostsLoaded(posts);
+                    } else {
+                        callback.onPostsLoaded(posts);
+                    }
+                });
     }
 
     public void deleteUserPost(String postID, booleanCallback callback) {
         DocumentReference docRef;
         deleteFromPosts(postID);
-        docRef = userPostCol.document(auth.getCurrentUser().getUid()).collection("posts").document(postID);
+        docRef = userUploadsCol.document(auth.getCurrentUser().getUid()).collection("posts").document(postID);
         docRef.delete()
                 .addOnCompleteListener(task -> {
                     callback.response(task.isSuccessful());
@@ -256,6 +254,48 @@ public class FirebaseController {
     private void deleteFromPosts(String postID) {
         DocumentReference docRef = postCol.document(postID);
         docRef.delete();
+    }
+
+
+    public void findUser(String username, userProfileCallback callback) {
+        userCol.whereEqualTo("username", username)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        if(!task.getResult().isEmpty()) {
+                            DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                            UserProfile profile = document.toObject(UserProfile.class);
+                            callback.onProfileLoaded(profile);
+                        }
+                        callback.onProfileLoaded(null);
+                    }
+                });
+    }
+
+    public void getUserDataUsingUID(String uid, userProfileCallback callback) {
+        db.enableNetwork();
+        FirebaseUser user = auth.getCurrentUser();
+        DocumentReference docRef = userCol.document(uid);
+
+        docRef.get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if(document != null) {
+                            UserProfile profile = document.toObject(UserProfile.class);
+                            callback.onProfileLoaded(profile);
+                        } else {
+                            UserProfile profile = new UserProfile("Error", "Error", "", "", "", "");
+                            callback.onProfileLoaded(profile);
+                        }
+                    }
+                });
+    }
+
+    public void updateUserImageURL(String url) {
+        FirebaseUser user = auth.getCurrentUser();
+        DocumentReference docRef = userCol.document(user.getUid());
+        docRef.update("imageURL", url);
     }
 
 }

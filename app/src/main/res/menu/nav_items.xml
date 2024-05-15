@@ -5,9 +5,9 @@
         android:icon="@drawable/custom_home_selector"
         android:title="Home" />
     <item
-        android:id="@+id/marketplace"
-        android:title="Market Place"
-        android:icon="@drawable/custom_market_selector"/>
+        android:id="@+id/reels"
+        android:title="Reels"
+        android:icon="@drawable/custom_reels_selector"/>
 
     <item
         android:id="@+id/search"
