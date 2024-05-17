@@ -1,6 +1,7 @@
 package com.example.unilink.activity;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,8 @@ import com.example.unilink.R;
 
 public class HelpActivity extends AppCompatActivity {
 
+    ImageButton back_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,5 +25,7 @@ public class HelpActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        back_btn = findViewById(R.id.back_btn);
+        back_btn.setOnClickListener(v -> finish());
     }
 }

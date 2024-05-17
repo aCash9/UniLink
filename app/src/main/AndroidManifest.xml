@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,7 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.UniLink"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".activity.EventsActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.AddReelActivity"
             android:exported="false" />
@@ -24,7 +27,7 @@
             android:name=".CropperActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MyPostsActivity"
+            android:name=".activity.MyAccountActivity"
             android:exported="false" />
         <activity
             android:name=".activity.AddNewPostActivity"
@@ -36,7 +39,7 @@
             android:name=".activity.HelpActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.AccountActivity"
+            android:name=".activity.EditAccountActivity"
             android:exported="false" />
         <activity
             android:name=".activity.NotesActivity"
@@ -52,7 +55,7 @@
             android:exported="false" />
         <activity
             android:name=".activity.MainActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

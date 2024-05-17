@@ -36,23 +36,54 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <SearchView
+    <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
-        android:background="@drawable/custom_search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/appbar"
-        android:queryHint="Search users"
         android:layout_marginStart="10dp"
+        app:iconifiedByDefault="false"
         android:layout_marginEnd="10dp"
-        android:iconifiedByDefault="false"/>
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
+        android:queryHint="Search by username"
+        android:background="@drawable/custom_search_view"
+        android:textColor="@color/black" />
+    <TextView
+        android:id="@+id/number_of_users"
+        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_height="wrap_content"
-        app:lottie_rawRes="@raw/main_loader_1"
-        app:lottie_autoPlay="false"
-        app:lottie_loop="true"/>
+        android:layout_centerVertical="true"
+        android:layout_above="@id/events"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:background="@color/black"
+        android:drawablePadding="10dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:text="Current User Count:"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/events"
+        android:text="Events️"
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/montserrat"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/custom_purple_button"
+        android:textAlignment="center"
+        android:letterSpacing="0.08"
+        android:textAllCaps="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
 </RelativeLayout>

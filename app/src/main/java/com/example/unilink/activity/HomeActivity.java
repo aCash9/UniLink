@@ -1,18 +1,22 @@
 package com.example.unilink.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.unilink.Fragments.AccountFragment;
+import com.example.unilink.FirebaseController;
 import com.example.unilink.Fragments.HomeFragment;
 import com.example.unilink.Fragments.LivingFragment;
 import com.example.unilink.Fragments.ReelsFragment;
 import com.example.unilink.Fragments.SearchFragment;
+import com.example.unilink.Fragments.SettingsFragment;
 import com.example.unilink.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -36,8 +40,8 @@ public class HomeActivity extends AppCompatActivity {
                 openFragment(new HomeFragment(), count == 1);
             } else if(id == R.id.reels) {
                 openFragment(new ReelsFragment(), false);
-            } else if(id == R.id.menu) {
-                openFragment(new AccountFragment(), false);
+            } else if(id == R.id.settings) {
+                openFragment(new SettingsFragment(), false);
             } else if(id == R.id.search){
                 openFragment(new SearchFragment(), false);
             } else {

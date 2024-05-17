@@ -1,21 +1,23 @@
 package com.example.unilink.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.unilink.FirebaseController;
 import com.example.unilink.R;
+import com.example.unilink.activity.EventsActivity;
 import com.example.unilink.activity.ProfileActivity;
-import com.example.unilink.callback.userProfileCallback;
-import com.example.unilink.objects.UserProfile;
+import com.example.unilink.callback.IntegerCallback;
 
 public class SearchFragment extends Fragment {
     public SearchFragment() {
@@ -24,7 +26,9 @@ public class SearchFragment extends Fragment {
 
 
     private FirebaseController controller;
-    private SearchView searchView;
+    private androidx.appcompat.widget.SearchView searchView;
+    private TextView number_of_users;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -33,7 +37,27 @@ public class SearchFragment extends Fragment {
 
         searchView = inflate.findViewById(R.id.search_view);
         controller = new FirebaseController();
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+        number_of_users = inflate.findViewById(R.id.number_of_users);
+
+        controller.getNumberOfUser(count -> {
+            number_of_users.setText(number_of_users.getText() + " " + String.valueOf(count));
+        });
+
+        Button events = inflate.findViewById(R.id.events);
+        events.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), EventsActivity.class);
+            startActivity(intent);
+        });
+
+        Toast toast = new Toast(getContext());
+        View view = getLayoutInflater().inflate(R.layout.custom_toast_box, container.findViewById(R.id.viewContainer));
+        toast.setView(view);
+        TextView promptTextview = view.findViewById(R.id.promptText);
+        ImageView imageView = view.findViewById(R.id.action_image);
+        toast.setDuration(Toast.LENGTH_LONG);
+
+        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public boolean onQueryTextSubmit(String query) {
                 controller.findUser(query, userProfile -> {
@@ -42,10 +66,13 @@ public class SearchFragment extends Fragment {
                         intent.putExtra("user", userProfile.getUserUID());
                         startActivity(intent);
                     } else {
+                        promptTextview.setText("User not found");
+                        imageView.setImageResource(R.drawable.baseline_error_24);
+                        toast.show();
                         searchView.setQuery("", false);
                     }
                 });
-                return false;
+                return true;
             }
 
             @Override

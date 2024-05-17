@@ -13,27 +13,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.unilink.FirebaseController;
+import com.example.unilink.Fragments.ReelsFragment;
+import com.example.unilink.Fragments.UserPostFragment;
+import com.example.unilink.Fragments.UserReelsFragment;
 import com.example.unilink.R;
 import com.example.unilink.callback.userProfileCallback;
 import com.example.unilink.objects.UserProfile;
 import com.example.unilink.recyclerAdapters.RecyclerMyPostAdapter;
 import com.example.unilink.recyclerAdapters.RecyclerSearchedUserPostAdapter;
+import com.example.unilink.viewPagerAdapter.ViewPagerPostAdapter;
+import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private FirebaseController controller;
     private LottieAnimationView lottieAnimationView;
-
-    private SwipeRefreshLayout swipeRefreshLayout;
-
-    private ImageButton backButton;
     private TextView username, name;
     private ImageView profileImage;
 
@@ -48,19 +50,23 @@ public class ProfileActivity extends AppCompatActivity {
             return insets;
         });
 
-        recyclerView = findViewById(R.id.recyclerView);
-        controller = new FirebaseController();
-        lottieAnimationView = findViewById(R.id.animationView);
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        backButton = findViewById(R.id.back_btn);
+        FirebaseController controller = new FirebaseController();
+        ImageButton backButton = findViewById(R.id.back_btn);
         username = findViewById(R.id.username);
         profileImage = findViewById(R.id.userImage);
         name = findViewById(R.id.name);
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Intent intent = getIntent();
         String userUID = intent.getStringExtra("user");
         backButton.setOnClickListener(v -> finish());
+
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+
+        ViewPagerPostAdapter adapter = new ViewPagerPostAdapter(getSupportFragmentManager(), userUID);
+        viewPager.setAdapter(adapter);
+
+        tabLayout.setupWithViewPager(viewPager);
+
         controller.getUserDataUsingUID(userUID, userProfile -> {
             username.setText(userProfile.getUsername());
             name.setText(userProfile.getName());
@@ -69,31 +75,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Picasso.get().load(userProfile.getUserImageURI()).into(profileImage);
             }
 
-            loading(true);
-            controller.getMyPosts(userProfile.getUserUID(), posts -> {
-                RecyclerSearchedUserPostAdapter adapter = new RecyclerSearchedUserPostAdapter(this, posts);
-                recyclerView.setAdapter(adapter);
-                loading(false);
-            });
-
-            swipeRefreshLayout.setOnRefreshListener(() -> {
-                controller.getMyPosts(userProfile.getUserUID(), posts -> {
-                    RecyclerSearchedUserPostAdapter adapter = new RecyclerSearchedUserPostAdapter(this, posts);
-                    recyclerView.setAdapter(adapter);
-                    loading(false);
-                    swipeRefreshLayout.setRefreshing(false);
-                });
-            });
-
         });
-    }
-    private void loading(boolean loading){
-        if(loading) {
-            lottieAnimationView.setVisibility(View.VISIBLE);
-            lottieAnimationView.playAnimation();
-        } else {
-            lottieAnimationView.pauseAnimation();
-            lottieAnimationView.setVisibility(View.GONE);
-        }
     }
 }

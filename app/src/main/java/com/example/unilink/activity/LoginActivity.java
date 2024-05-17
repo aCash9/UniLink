@@ -71,7 +71,6 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (!check(email)) {
-                collapseKeyboard();
                 progressBar.setVisibility(View.GONE);
                 Toast toast = new Toast(this);
                 View view = getLayoutInflater().inflate(R.layout.custom_toast_box, findViewById(R.id.viewContainer));
@@ -88,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            collapseKeyboard();
             progressBar.setVisibility(View.GONE);
             Toast toast = new Toast(this);
             View view = getLayoutInflater().inflate(R.layout.custom_toast_box, findViewById(R.id.viewContainer));
@@ -140,7 +138,6 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (!check(email)) {
-                collapseKeyboard();
 
                 progressBar.setVisibility(View.GONE);
                 Toast toast = new Toast(this);
@@ -164,8 +161,6 @@ public class LoginActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 return;
             }
-
-            collapseKeyboard();
             auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         Toast toast = new Toast(this);
@@ -198,11 +193,6 @@ public class LoginActivity extends AppCompatActivity {
         back.setOnClickListener(v -> {
             finish();
         });
-    }
-
-    private void collapseKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(Objects.requireNonNull(this.getCurrentFocus()).getWindowToken(), 0);
     }
 
     private boolean check(String email) {

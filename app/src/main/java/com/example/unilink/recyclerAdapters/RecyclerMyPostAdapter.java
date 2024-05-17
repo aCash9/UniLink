@@ -71,8 +71,9 @@ public class RecyclerMyPostAdapter extends RecyclerView.Adapter<RecyclerMyPostAd
         });
 
         holder.delete.setOnClickListener(v -> {
-            controller.deleteUserPost(list.get(position).getPostID(), response -> {
+            controller.deleteUserPost(list.get(position).getPostID(), list.get(position).getPostImageURL(), response -> {
                 list.remove(position);
+                notifyItemRemoved(position);
             });
         });
     }

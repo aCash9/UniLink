@@ -2,6 +2,7 @@ package com.example.unilink.activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
@@ -37,7 +37,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-public class AccountActivity extends AppCompatActivity {
+public class EditAccountActivity extends AppCompatActivity {
 
     //add private field to all the variables
 
@@ -57,14 +57,14 @@ public class AccountActivity extends AppCompatActivity {
     private View darkBackground;
     private FirebaseController controller;
     private String originalUsername;
-    private UserProfile userProfile;
+    private UserProfile user_Profile;
     ActivityResultLauncher<String> mGETcontent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_account);
+        setContentView(R.layout.activity_edit_account);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -110,7 +110,7 @@ public class AccountActivity extends AppCompatActivity {
                         email.setText(userProfile.getEmail());
                         username.setText(userProfile.getUsername());
                         originalUsername = userProfile.getUsername();
-                        userProfile = userProfile;
+                        user_Profile = userProfile;
                         buttons(true);
                     });
                 }
@@ -135,10 +135,10 @@ public class AccountActivity extends AppCompatActivity {
         });
 
         mGETcontent = registerForActivityResult(new ActivityResultContracts.GetContent(), o -> {
-            Intent intent = new Intent(AccountActivity.this, CropperActivity.class);
+            Intent intent = new Intent(EditAccountActivity.this, CropperActivity.class);
             if(o != null) {
                 intent.putExtra("data", o.toString());
-                intent.putExtra("crop", "post");
+                intent.putExtra("crop", "dp");
                 startActivityForResult(intent, 101);
             }
         });
@@ -166,6 +166,9 @@ public class AccountActivity extends AppCompatActivity {
                                         .setPhotoUri(uri1).build();
 
                                 user.updateProfile(profileChangeRequest);
+                                promptTextview.setText("Profile Picture Updated");
+                                imageView.setImageResource(R.drawable.baseline_cloud_done_24);
+                                toast.show();
                                 buttons(true);
                             });
                         })
@@ -195,7 +198,7 @@ public class AccountActivity extends AppCompatActivity {
                     response = false;
                 }
 
-                UserProfile profile = new UserProfile(nameText, emailText, usernameText, userProfile.getClubCode(), userProfile.getUserUID(), user.getPhotoUrl().toString());
+                UserProfile profile = new UserProfile(nameText, emailText, usernameText, user_Profile.getClubCode(), user_Profile.getUserUID(), user.getPhotoUrl().toString());
                 if(!response) {
                     controller.setUserData(profile, response1 -> {
                         if(response1) {

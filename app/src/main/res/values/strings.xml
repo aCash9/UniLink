@@ -2,9 +2,25 @@
     <string name="app_name">UniLink</string>
     <string name="image">Image used in login pages\n</string>
     <string name="name">UniLink</string>
-    <string name="description">Your ultimate campus campanion,\nconnecting students to the world.</string>
+    <string name="description">Your ultimate campus campanion,\nconnect and be part of something big.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="creator_1">Akash Srivastava</string>
-    <string name="creator_2">Suraj G Meharwade</string>
+    <string name="creator_1">Akash Srivastava (Android)</string>
+    <string name="creator_2">Suraj G Meharwade (IOS)</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="contribution">Whether you\'re a developer, designer, marketer, or have skills in operations, there are various ways you can contribute to UniLink\'s success.\n
+        \n<b>Development:</b>\nAndroid Development: Help enhance our Android app using Java.
+        \n\niOS Development: Contribute to the iOS version of UniLink using Swift.
+        \n\nBackend Development: Work on server-side logic, database management, and API integrations using Firebase.
+        \n\n<b>Operations</b>\nCommunity Management: Engage with users, moderate discussions, and foster a positive community environment.
+        \n\nUser Support: Assist users with inquiries, troubleshooting, and feedback.\n
+        \n<b>Marketing</b>\nContent Creation: Write blog posts, tutorials, and social media content to promote UniLink.\n
+        \nGrowth Hacking: Develop strategies to increase user acquisition, retention, and engagement.
+    </string>
+    <string name="getInTouch">Ready to contribute or have questions? We\'d love to hear from you! Connect with us on LinkedIn. Links are provided in the settings page. Thank you!</string>
 </resources>

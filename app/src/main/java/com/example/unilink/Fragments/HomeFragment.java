@@ -1,6 +1,10 @@
 package com.example.unilink.Fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.unilink.activity.AddNewPostActivity;
@@ -30,18 +35,19 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class HomeFragment extends Fragment {
 
     public HomeFragment() {
-        // Required empty public constructor
     }
     private RecyclerView recyclerView;
     private FirebaseController controller;
     private LottieAnimationView lottieAnimationView;
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private boolean flag = true;
+    private int flag = 0;
+    Dialog dialog;
 
     private SimpleExoPlayer player;
 
     private boolean animFlag = false;
+    private TextView title, text;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +64,30 @@ public class HomeFragment extends Fragment {
         final FloatingActionButton addPost = inflate.findViewById(R.id.addPost);
         final FloatingActionButton addImage = inflate.findViewById(R.id.addImage);
         final FloatingActionButton addReel = inflate.findViewById(R.id.addReel);
+
+        dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.custom_intro_dialog_box);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        title = dialog.findViewById(R.id.title);
+        text = dialog.findViewById(R.id.text);
+
+        SharedPreferences preferences = getContext().getSharedPreferences("updateChecked", MODE_PRIVATE);
+        boolean checked = preferences.getBoolean("updateChecked", false);
+
+        if(!checked) {
+            controller.checkUpdates(update -> {
+                if(!(update == null)) {
+                    if(!update.isCancellable()) {
+                        dialog.setCancelable(false);
+                    }
+                    text.setText(update.getText());
+                    title.setText(update.getTitle());
+                    dialog.show();
+                    preferences.edit().putBoolean("updateChecked", true).apply();
+                }
+            });
+        }
 
 
         Animation open = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_open_anim);
@@ -103,7 +133,7 @@ public class HomeFragment extends Fragment {
         });
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            if(!flag) {
+            if(flag == 0) {
                 controller.getPosts(0, posts -> {
                     RecyclerClubPostAdapter adapter = new RecyclerClubPostAdapter(getActivity(), posts);
                     recyclerView.setAdapter(adapter);
@@ -121,20 +151,21 @@ public class HomeFragment extends Fragment {
         });
 
         switchbtn.setOnClickListener(v -> {
-          if(flag) {
+          if(flag == 0) {
               controller.getPosts(0, posts -> {
                   RecyclerClubPostAdapter adapter = new RecyclerClubPostAdapter(getActivity(), posts);
                   recyclerView.setAdapter(adapter);
                   loading(false);
               });
+              flag = 1;
           } else {
               controller.getPosts(1, posts -> {
                   RecyclerPostAdapter adapter = new RecyclerPostAdapter(getActivity(), posts);
                   recyclerView.setAdapter(adapter);
                   loading(false);
               });
+              flag = 0;
           }
-          flag = !flag;
         });
 
         return inflate;

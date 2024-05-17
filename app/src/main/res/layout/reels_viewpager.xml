@@ -6,18 +6,17 @@
     android:layout_height="match_parent">
 
     <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/video"
+        android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintDimensionRatio="16:9"
-        android:visibility="invisible"
         app:resize_mode="fit"/>
 
     <ImageButton
         android:id="@+id/sound"
         android:src="@drawable/sound"
         android:scaleType="centerCrop"
-        android:background="@color/black"
+        android:background="@android:color/transparent"
         android:layout_marginTop="30dp"
         android:layout_alignParentEnd="true"
         android:layout_width="34dp"
@@ -27,15 +26,16 @@
 
     <ImageButton
         android:id="@+id/like"
-        android:src="@drawable/living_filled_white"
+        android:src="@drawable/living_icon"
         android:scaleType="centerCrop"
-        android:background="@color/black"
+        android:background="@android:color/transparent"
         android:layout_above="@id/likecounter"
         android:layout_alignParentEnd="true"
         android:layout_width="34dp"
         android:layout_marginEnd="20dp"
         android:layout_gravity="center"
-        android:layout_height="34dp"/>
+        android:layout_height="34dp"
+        app:tint="@color/white" />
 
     <TextView
         android:id="@+id/likecounter"
@@ -44,7 +44,7 @@
         android:textSize="18sp"
         android:layout_above="@id/relativeLayout"
         android:layout_alignParentEnd="true"
-        android:text="2"
+        android:text=""
         android:textAlignment="center"
         android:layout_marginEnd="20dp"
         android:layout_width="34dp"
@@ -96,7 +96,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
-            android:background="@color/black"
+            android:background="@android:color/transparent"
             android:layout_marginStart="10dp"
             android:layout_width="28dp"
             android:layout_gravity="center"
@@ -114,4 +114,11 @@
         android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="wrap_content"
+        android:progressTint="@color/white"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 </RelativeLayout>

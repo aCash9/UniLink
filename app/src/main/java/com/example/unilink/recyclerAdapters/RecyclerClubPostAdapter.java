@@ -76,7 +76,7 @@ public class RecyclerClubPostAdapter extends RecyclerView.Adapter<RecyclerClubPo
         holder.share.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, list.get(position).getUserImageURL());
+            shareIntent.putExtra(Intent.EXTRA_TEXT, list.get(position).getPostImageURL());
 
             context.startActivity(Intent.createChooser(shareIntent, "Share Image URL"));
         });

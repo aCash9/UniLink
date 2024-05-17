@@ -1,12 +1,21 @@
 package com.example.unilink;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.example.unilink.callback.ClubDetailsCallback;
+import com.example.unilink.callback.IntegerCallback;
+import com.example.unilink.callback.UpdatesCallback;
 import com.example.unilink.callback.UserPostsCallback;
 import com.example.unilink.callback.booleanCallback;
 import com.example.unilink.callback.userProfileCallback;
 import com.example.unilink.objects.ClubDetails;
+import com.example.unilink.objects.Updates;
 import com.example.unilink.objects.UserPosts;
 import com.example.unilink.objects.UserProfile;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -15,6 +24,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +39,7 @@ public class FirebaseController {
     private final CollectionReference postCol = db.collection("posts");
     private final CollectionReference reelsCol = db.collection("reels");
     private final CollectionReference clubPostCol = db.collection("clubPosts");
+    private final CollectionReference updatesCol = db.collection("updates");
     private final CollectionReference userUploadsCol = db.collection("userUploads");
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -240,11 +253,48 @@ public class FirebaseController {
                     }
                 });
     }
+    public void getMyReels(String uid, UserPostsCallback callback) {
+        ArrayList<UserPosts> posts = new ArrayList<>();
 
-    public void deleteUserPost(String postID, booleanCallback callback) {
+        userUploadsCol.document(uid).collection("reels")
+                .get()
+                .addOnCompleteListener(task1 -> {
+                    if(task1.isSuccessful()) {
+                        if(!task1.getResult().isEmpty()) {
+                            for(DocumentSnapshot document : task1.getResult()) {
+                                UserPosts post = document.toObject(UserPosts.class);
+                                posts.add(post);
+                            }
+                        }
+                        callback.onPostsLoaded(posts);
+                    } else {
+                        callback.onPostsLoaded(posts);
+                    }
+                });
+    }
+
+    public void deleteUserPost(String postID, String postURL, booleanCallback callback) {
         DocumentReference docRef;
         deleteFromPosts(postID);
+        deleteMediaUsingURL(postURL);
         docRef = userUploadsCol.document(auth.getCurrentUser().getUid()).collection("posts").document(postID);
+        docRef.delete()
+                .addOnCompleteListener(task -> {
+                    callback.response(task.isSuccessful());
+                });
+    }
+
+    public void deleteMediaUsingURL(String url) {
+        StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(url);
+        imageRef.delete();
+    }
+
+
+    public void deleteUserReels(String postID, String postURL, booleanCallback callback) {
+        DocumentReference docRef;
+        deleteFromReels(postID);
+        deleteMediaUsingURL(postURL);
+        docRef = userUploadsCol.document(auth.getCurrentUser().getUid()).collection("reels").document(postID);
         docRef.delete()
                 .addOnCompleteListener(task -> {
                     callback.response(task.isSuccessful());
@@ -253,6 +303,11 @@ public class FirebaseController {
 
     private void deleteFromPosts(String postID) {
         DocumentReference docRef = postCol.document(postID);
+        docRef.delete();
+    }
+
+    private void deleteFromReels(String postID) {
+        DocumentReference docRef = reelsCol.document(postID);
         docRef.delete();
     }
 
@@ -297,5 +352,31 @@ public class FirebaseController {
         DocumentReference docRef = userCol.document(user.getUid());
         docRef.update("imageURL", url);
     }
+
+
+    public void checkUpdates(UpdatesCallback callback) {
+        DocumentReference documentReference = updatesCol.document("PiiMnCWsYUOeZvca5PqtmMNKUY53");
+        documentReference.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Updates updates = document.toObject(Updates.class);
+                            callback.callbackUpdate(updates);
+                        }
+                    }
+                });
+    }
+
+    public void getNumberOfUser(IntegerCallback callback) {
+        userCol.get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        int count = task.getResult().size();
+                        callback.count(count);
+                    }
+                });
+    }
+
 
 }

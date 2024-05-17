@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".Fragments.LivingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_marginStart="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:background="@color/black"
+        android:layout_centerInParent="true"
+        android:drawablePadding="10dp"
+        android:fontFamily="@font/montserrat"
+        android:layout_margin="30dp"
+        android:text="Coming soon!!\nA market place for students, a perfect place to get rid of your stuff\n\nA accomodations section where you can find reviews and images of all the PGs and Hostels nearby. "
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
-</FrameLayout>
+</RelativeLayout>

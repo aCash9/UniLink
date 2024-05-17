@@ -4,9 +4,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +11,20 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.unilink.activity.AccountActivity;
+import androidx.fragment.app.Fragment;
+
+import com.example.unilink.R;
 import com.example.unilink.activity.ContributeActivity;
 import com.example.unilink.activity.HelpActivity;
 import com.example.unilink.activity.MainActivity;
-import com.example.unilink.activity.MyPostsActivity;
+import com.example.unilink.activity.MyAccountActivity;
 import com.example.unilink.activity.NotesActivity;
-import com.example.unilink.R;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class AccountFragment extends Fragment {
+public class SettingsFragment extends Fragment {
 
 
-    public AccountFragment() {
-        // Required empty public constructor
+    public SettingsFragment() {
     }
 
     TextView akash, suraj;
@@ -37,7 +34,7 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflate = inflater.inflate(R.layout.fragment_account, container, false);
+        View inflate = inflater.inflate(R.layout.fragment_settings, container, false);
 
         akash = inflate.findViewById(R.id.akash);
         suraj = inflate.findViewById(R.id.suraj);
@@ -56,7 +53,7 @@ public class AccountFragment extends Fragment {
         });
 
         account.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), MyPostsActivity.class);
+            Intent intent = new Intent(getContext(), MyAccountActivity.class);
             startActivity(intent);
         });
 

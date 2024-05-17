@@ -226,6 +226,11 @@ public class RegisterActivity extends AppCompatActivity {
             passwordEditText.setError("This field can't be empty");
             return true;
         }
+        if(password.length() < 6) {
+            passwordEditText.requestFocus();
+            passwordEditText.setError("Password too small");
+            return true;
+        }
         if(username.isEmpty()) {
             usernameEditText.requestFocus();
             usernameEditText.setError("This field can't be empty");

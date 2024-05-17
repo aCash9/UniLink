@@ -19,7 +19,7 @@
         android:title="Living"
         android:icon="@drawable/custom_living_selector"/>
     <item
-        android:id="@+id/menu"
+        android:id="@+id/settings"
         android:title="Setting"
         android:icon="@drawable/custom_setting_selector"/>
 </menu>
