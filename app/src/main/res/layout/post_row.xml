@@ -37,6 +37,7 @@
                     android:id="@+id/userImage"
                     android:scaleType="centerCrop"
                     android:rotation="0"
+                    android:src="@drawable/user_profile_standard"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
             </androidx.cardview.widget.CardView>

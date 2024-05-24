@@ -84,10 +84,11 @@
             <ImageView
                 android:id="@+id/userImage"
                 android:layout_width="100dp"
-                android:src="@drawable/male_user_dp"
+                android:src="@drawable/user_profile_standard"
                 android:layout_height="100dp"
                 android:contentDescription="userImage"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                tools:ignore="HardcodedText" />
         </androidx.cardview.widget.CardView>
 
         <LinearLayout

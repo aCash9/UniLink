@@ -8,7 +8,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,7 +26,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.unilink.R;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private ImageView graphic;
+    private SoftInputAssist softInputAssist;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +52,13 @@ public class LoginActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
+        softInputAssist = new SoftInputAssist(this);
 
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         ImageButton back = findViewById(R.id.backButton);
         graphic = findViewById(R.id.graphic);
-        Button loginbtn = findViewById(R.id.loginbtn);
+        Button login_btn = findViewById(R.id.loginbtn);
         Button forgotPassword = findViewById(R.id.forgotPassword);
 
         forgotPassword.setOnClickListener(v -> {
@@ -70,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            if (!check(email)) {
+            if (check(email)) {
                 progressBar.setVisibility(View.GONE);
                 Toast toast = new Toast(this);
                 View view = getLayoutInflater().inflate(R.layout.custom_toast_box, findViewById(R.id.viewContainer));
@@ -124,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginbtn.setOnClickListener(v -> {
+        login_btn.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
@@ -137,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            if (!check(email)) {
+            if (check(email)) {
 
                 progressBar.setVisibility(View.GONE);
                 Toast toast = new Toast(this);
@@ -171,16 +172,23 @@ public class LoginActivity extends AppCompatActivity {
                         imageView.setImageResource(R.drawable.baseline_cloud_done_24);
                         toast.setDuration(Toast.LENGTH_LONG);
                         if(task.isSuccessful()) {
-                            if (auth.getCurrentUser().isEmailVerified()) {
-                                Intent intent = new Intent(this, HomeActivity.class);
-                                startActivity(intent);
+                            if(auth.getCurrentUser() != null) {
+                                if (auth.getCurrentUser().isEmailVerified()) {
+                                    Intent intent = new Intent(this, HomeActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    promptTextview.setText("Email not verified");
+                                    emailEditText.setText("");
+                                    passwordEditText.setText("");
+                                    progressBar.setVisibility(View.GONE);
+                                }
                             } else {
-                                promptTextview.setText("Email not verified");
+                                promptTextview.setText("Error");
                                 emailEditText.setText("");
                                 passwordEditText.setText("");
                                 progressBar.setVisibility(View.GONE);
                             }
-
                         } else {
                             promptTextview.setText("Invalid credentials");
                             emailEditText.setText("");
@@ -190,16 +198,14 @@ public class LoginActivity extends AppCompatActivity {
                         toast.show();
                     });
         });
-        back.setOnClickListener(v -> {
-            finish();
-        });
+        back.setOnClickListener(v -> finish());
     }
 
     private boolean check(String email) {
         String emailPattern = "^[a-zA-Z0-9._%+-]+@bmsit\\.in$";
         Pattern pattern = Pattern.compile(emailPattern);
         Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
+        return !matcher.matches();
     }
 
     private void animateAndHideGraphic() {
@@ -240,5 +246,22 @@ public class LoginActivity extends AppCompatActivity {
         animationSet.addAnimation(fadeOutAnimation);
         animationSet.addAnimation(translateAnimation);
         return animationSet;
+    }
+    @Override
+    protected void onResume() {
+        softInputAssist.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        softInputAssist.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        softInputAssist.onPause();
+        super.onPause();
     }
 }

@@ -49,8 +49,8 @@ dependencies {
     implementation(libs.ucrop)
     implementation(libs.exoplayer.core)
     implementation(libs.exoplayer.ui)
-
     androidTestImplementation(libs.ext.junit)
+    implementation(libs.glide)
     implementation(libs.imageslideshow)
     implementation(libs.lottie)
     implementation(libs.picasso)

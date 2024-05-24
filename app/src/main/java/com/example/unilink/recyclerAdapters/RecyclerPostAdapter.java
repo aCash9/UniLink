@@ -8,14 +8,18 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.activity.ProfileActivity;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.UserPosts;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -27,6 +31,8 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
     private final ArrayList<UserPosts> list;
     private final FirebaseController controller;
     private final FirebaseUser user;
+    private boolean liked;
+
     public RecyclerPostAdapter(Context context, ArrayList<UserPosts> list) {
         this.context = context;
         this.list = list;
@@ -44,9 +50,14 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerPostAdapter.ViewHolder holder, int position) {
-        Picasso.get().load(list.get(position).getUserImageURL()).into(holder.user_image);
-        Picasso.get().load(list.get(position).getPostImageURL()).into(holder.image);
+        if (list.get(position).getUserImageURL() == null) {
+            Picasso.get().load(R.drawable.user_profile_standard).into(holder.user_image);
+            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+        } else {
+            Picasso.get().load(list.get(position).getUserImageURL()).into(holder.user_image);
+        }
 
+        Picasso.get().load(list.get(position).getPostImageURL()).into(holder.image);
         holder.username.setText(list.get(position).getUsername());
         String likes = String.valueOf(list.get(position).getLike());
         holder.likes_counter.setText(likes);
@@ -55,23 +66,23 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
         String time = TimeAgo.Companion.using(Long.parseLong(list.get(position).getTimestamp()));
         holder.timestamp.setText(time);
 
+        holder.username.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ProfileActivity.class);
+            intent.putExtra("user", list.get(position).getUserUID());
+            context.startActivity(intent);
+        });
 
         controller.checkIfAlreadyLiked(0, list.get(position).getPostID(), user.getUid(), response -> {
-           if(response) {
-               holder.like.setImageResource(R.drawable.living_filled_red);
-               holder.like.setEnabled(false);
-           }
+            if (response) {
+                holder.like.setImageResource(R.drawable.living_filled_red);
+                liked = true;
+            } else {
+                liked = false;
+            }
         });
 
-        holder.like.setOnClickListener(v -> {
-            controller.addLikeToPost(0, list.get(position).getPostID(), user.getUid());
-            controller.addLikeToUserPost(list.get(position));
-            holder.like.setImageResource(R.drawable.living_filled_red);
-            holder.like.setEnabled(false);
-            holder.likes_counter.setText(String.valueOf(list.get(position).getLike() + 1));
-            controller.incrementLike(0, list.get(position).getPostID());
-        });
 
+        holder.like.setOnClickListener(v -> {handleLikeButtonClick(list.get(position), holder);});
         holder.share.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -79,6 +90,31 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
 
             context.startActivity(Intent.createChooser(shareIntent, "Share Image URL"));
         });
+    }
+
+    private void handleLikeButtonClick(UserPosts userPosts, ViewHolder holder) {
+        if(liked) {
+            holder.like.setImageResource(R.drawable.living_filled_white);
+            holder.likes_counter.setText(String.valueOf(userPosts.getLike() - 1));
+        } else {
+            holder.like.setImageResource(R.drawable.living_filled_red);
+            holder.likes_counter.setText(String.valueOf(userPosts.getLike() + 1));
+        }
+
+        controller.PostLikeOperationDemo(!liked, 0, userPosts.getPostID(), user.getUid())
+                .addOnCompleteListener(task -> {
+                    if(!task.isSuccessful()) {
+                        if(liked) {
+                            holder.like.setImageResource(R.drawable.living_filled_red);
+                            holder.likes_counter.setText(String.valueOf(userPosts.getLike() + 1));
+                        } else {
+                            holder.like.setImageResource(R.drawable.living_filled_white);
+                            holder.likes_counter.setText(String.valueOf(userPosts.getLike() - 1));
+                        }
+                    } else {
+                        liked = !liked;
+                    }
+                });
     }
 
     @Override
@@ -89,7 +125,7 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView user_image, image;
         TextView username, likes_counter, timestamp, caption;
-        ImageButton like, share, sound;
+        ImageButton like, share;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

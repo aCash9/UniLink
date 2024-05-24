@@ -11,13 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.UserPosts;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -30,6 +27,7 @@ public class RecyclerSearchedUserPostAdapter extends RecyclerView.Adapter<Recycl
     private final FirebaseController controller;
     private final FirebaseUser user;
 
+    private boolean liked = false;
 
     public RecyclerSearchedUserPostAdapter(Context context, ArrayList<UserPosts> list) {
         this.context = context;
@@ -60,17 +58,24 @@ public class RecyclerSearchedUserPostAdapter extends RecyclerView.Adapter<Recycl
         controller.checkIfAlreadyLiked(0, list.get(position).getPostID(), user.getUid(), response -> {
            if(response) {
                holder.like.setImageResource(R.drawable.living_filled_red);
-               holder.like.setEnabled(false);
+               liked = true;
            }
         });
 
         holder.like.setOnClickListener(v -> {
-            controller.addLikeToPost(0, list.get(position).getPostID(), user.getUid());
-            controller.addLikeToUserPost(list.get(position));
-            holder.like.setImageResource(R.drawable.living_filled_red);
-            holder.like.setEnabled(false);
-            holder.likes_counter.setText(String.valueOf(list.get(position).getLike() + 1));
-            controller.incrementLike(0, list.get(position).getPostID());
+            if(liked) {
+                controller.PostLikeOperation(false,0, list.get(position).getPostID(), user.getUid());
+                controller.removeLikeToUserPost(list.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_white);
+                holder.likes_counter.setText(String.valueOf(list.get(position).getLike() - 1));
+                controller.changeLike(false, 0, list.get(position).getPostID());
+            } else {
+                controller.PostLikeOperation(true,0, list.get(position).getPostID(), user.getUid());
+                controller.addLikeToUserPost(list.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_red);
+                holder.likes_counter.setText(String.valueOf(list.get(position).getLike() + 1));
+                controller.changeLike(true,0, list.get(position).getPostID());
+            }
         });
     }
 
@@ -83,7 +88,6 @@ public class RecyclerSearchedUserPostAdapter extends RecyclerView.Adapter<Recycl
         ImageView image;
         TextView likes_counter, timestamp, caption;
         ImageButton like;
-        PlayerView video;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

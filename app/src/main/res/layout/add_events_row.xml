@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingStart="50dp"
+    android:paddingEnd="50dp"
+    android:background="@drawable/custom_banner_add_dialog_box">
+
+
+    <EditText
+        android:layout_marginTop="20dp"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_edit_text"
+        android:fontFamily="@font/montserrat"
+        android:hint="Title"
+        android:inputType="textEmailAddress"
+        android:maxLength="20"
+        android:minHeight="48dp"
+        android:paddingEnd="5dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="18sp"
+        tools:ignore="HardcodedText,RtlSymmetry" />
+
+    <LinearLayout
+        android:id="@+id/line4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@color/purple"
+        android:orientation="horizontal" />
+
+    <EditText
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/line4"
+        android:background="@drawable/custom_edit_text"
+        android:fontFamily="@font/montserrat"
+        android:hint="Description"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:paddingEnd="5dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="18sp"
+        tools:ignore="RtlSymmetry" />
+
+    <LinearLayout
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/text"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@color/purple"
+        android:orientation="horizontal" />
+
+
+    <EditText
+        android:id="@+id/link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/line1"
+        android:background="@drawable/custom_edit_text"
+        android:fontFamily="@font/montserrat"
+        android:hint="Google form link"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        android:paddingEnd="5dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="18sp"
+        tools:ignore="RtlSymmetry" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/uploadEvent"
+        android:text="Upload"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/montserrat_semibold"
+        android:background="@drawable/custom_purple_button"
+        android:layout_below="@id/link"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>

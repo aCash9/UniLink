@@ -1,5 +1,6 @@
 package com.example.unilink.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,10 +13,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
@@ -26,20 +25,17 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.unilink.CropperActivity;
-import com.example.unilink.objects.ClubDetails;
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.UserPosts;
 import com.example.unilink.objects.UserProfile;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class AddNewPostActivity extends AppCompatActivity {
@@ -55,9 +51,9 @@ public class AddNewPostActivity extends AppCompatActivity {
     private FirebaseController controller;
     private LottieAnimationView lottieAnimationView;
     private View darkBackground;
-    private ClubDetails details;
     ActivityResultLauncher<String> mGETcontent;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,26 +80,18 @@ public class AddNewPostActivity extends AppCompatActivity {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-        controller.getUserData(userProfile -> {
-            profile = userProfile;
-        });
+        controller.getUserData(userProfile -> profile = userProfile);
 
 
-        controller.verifyIfPartOfAnyClub(clubDetails -> {
-            if(clubDetails != null) {
+        controller.verifyIfAClub(clubDetails -> {
+            if(clubDetails) {
                 uploadClub.setVisibility(View.VISIBLE);
-                details = clubDetails;
             }
         });
 
-        backbtn.setOnClickListener(v -> {
-            finish();
-        });
+        backbtn.setOnClickListener(v -> finish());
 
-        image.setOnClickListener(v -> {
-            mGETcontent.launch("image/*");
-
-        });
+        image.setOnClickListener(v -> mGETcontent.launch("image/*"));
 
         mGETcontent = registerForActivityResult(new ActivityResultContracts.GetContent(), o -> {
             Intent intent = new Intent(AddNewPostActivity.this, CropperActivity.class);
@@ -132,29 +120,26 @@ public class AddNewPostActivity extends AppCompatActivity {
             }
 
             buttons(false);
-            if(uriImage != null) {
+            if(user != null && uriImage != null) {
                 String postID = random();
-                StorageReference ref = storageReference.child(postID + getFileExtension(uriImage));
+                StorageReference ref = storageReference.child(postID);
                 ref.putFile(uriImage)
-                        .addOnSuccessListener(taskSnapshot -> {
-                            ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                                UserPosts userPosts = new UserPosts(profile.getUsername(), postID, 0, String.valueOf(user.getPhotoUrl()), String.valueOf(uri), captions, String.valueOf(System.currentTimeMillis()), user.getUid());
-
-                                controller.addPost(0, userPosts, true, response -> {
-                                    if(response) {
-                                        promptTextview.setText("Post uploaded successfully");
-                                        imageView.setImageResource(R.drawable.baseline_cloud_done_24);
-                                        toast.show();
-                                        finish();
-                                    } else {
-                                        promptTextview.setText("Post upload unsuccessful");
-                                        imageView.setImageResource(R.drawable.baseline_error_24);
-                                        toast.show();
-                                    }
-                                    buttons(true);
-                                });
+                        .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            UserPosts userPosts = new UserPosts(profile.getUsername(), postID, 0, Objects.requireNonNull(user.getPhotoUrl()).toString(), String.valueOf(uri), captions, String.valueOf(System.currentTimeMillis()), user.getUid());
+                            controller.addPost(0, userPosts, true, response -> {
+                                if(response) {
+                                    promptTextview.setText("Post uploaded successfully");
+                                    imageView.setImageResource(R.drawable.baseline_cloud_done_24);
+                                    toast.show();
+                                    finish();
+                                } else {
+                                    promptTextview.setText("Post upload unsuccessful");
+                                    imageView.setImageResource(R.drawable.baseline_error_24);
+                                    toast.show();
+                                }
+                                buttons(true);
                             });
-                        })
+                        }))
                         .addOnFailureListener(e -> {
                             promptTextview.setText("Post upload unsuccessful");
                             imageView.setImageResource(R.drawable.baseline_error_24);
@@ -179,29 +164,31 @@ public class AddNewPostActivity extends AppCompatActivity {
             }
 
             buttons(false);
-            if(uriImage != null) {
+            if(user != null && uriImage != null) {
                 String postID = random();
-                StorageReference ref = storageReference.child(postID + getFileExtension(uriImage));
+                StorageReference ref = storageReference.child(postID);
                 ref.putFile(uriImage)
-                        .addOnSuccessListener(taskSnapshot -> {
-                            ref.getDownloadUrl().addOnSuccessListener(uri -> {
-
-                                UserPosts userPosts = new UserPosts(details.getName(), postID, 0, String.valueOf(details.getClubImageURL()), String.valueOf(uri), captions, String.valueOf(System.currentTimeMillis()), user.getUid());
-                                controller.addPost(1, userPosts, true, response -> {
-                                    if(response) {
-                                        promptTextview.setText("Post uploaded successfully");
-                                        imageView.setImageResource(R.drawable.baseline_cloud_done_24);
-                                        toast.show();
-                                        finish();
-                                    } else {
-                                        promptTextview.setText("Post upload unsuccessful");
-                                        imageView.setImageResource(R.drawable.baseline_error_24);
-                                        toast.show();
-                                    }
-                                    buttons(true);
-                                });
+                        .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            UserPosts userPosts = new UserPosts(profile.getUsername(), postID, 0, String.valueOf(profile.getUserImageURI()), String.valueOf(uri), captions, String.valueOf(System.currentTimeMillis()), user.getUid());
+                            controller.addPost(1, userPosts, true, response -> {
+                                if(response) {
+                                    promptTextview.setText("Post uploaded successfully");
+                                    imageView.setImageResource(R.drawable.baseline_cloud_done_24);
+                                    toast.show();
+                                    finish();
+                                } else {
+                                    promptTextview.setText("Post upload unsuccessful");
+                                    imageView.setImageResource(R.drawable.baseline_error_24);
+                                    toast.show();
+                                }
+                                buttons(true);
                             });
+                        }).addOnFailureListener(e -> {
+                                    promptTextview.setText(e.toString());
+                                    imageView.setImageResource(R.drawable.baseline_error_24);
+                                    toast.show();
                         })
+                        )
                         .addOnFailureListener(e -> {
                             promptTextview.setText("Post upload unsuccessful");
                             imageView.setImageResource(R.drawable.baseline_error_24);
@@ -241,23 +228,18 @@ public class AddNewPostActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 101 && resultCode == -1) {
+        if(data != null && requestCode == 101 && resultCode == -1) {
             String result = data.getStringExtra("result");
-            Uri resultUri = null;
+            Uri resultUri;
             if(result != null) {
                 resultUri = Uri.parse(result);
                 uriImage = resultUri;
                 image.setImageURI(uriImage);
                 Picasso.get().load(uriImage).into(image);
             }
+        } else {
+            Picasso.get().load(com.denzcoskun.imageslider.R.drawable.default_error).into(image);
         }
-    }
-
-    private String getFileExtension(Uri uriImage) {
-        ContentResolver cr = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-
-        return mime.getExtensionFromMimeType(cr.getType(uriImage));
     }
 
 }

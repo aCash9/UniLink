@@ -2,7 +2,6 @@ package com.example.unilink.activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -26,12 +26,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.unilink.CropperActivity;
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.UserProfile;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Callback;
@@ -88,7 +91,6 @@ public class EditAccountActivity extends AppCompatActivity {
         controller = new FirebaseController();
 
 
-
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
@@ -100,7 +102,7 @@ public class EditAccountActivity extends AppCompatActivity {
         Uri uri = user.getPhotoUrl();
 
         //loading the user image from firebase storage
-        if(uri != null) {
+        if (uri != null) {
             lottieAnimationView.playAnimation();
             Picasso.get().load(uri).into(userImage, new Callback() {
                 @Override
@@ -114,6 +116,7 @@ public class EditAccountActivity extends AppCompatActivity {
                         buttons(true);
                     });
                 }
+
                 @Override
                 public void onError(Exception e) {
 
@@ -136,7 +139,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
         mGETcontent = registerForActivityResult(new ActivityResultContracts.GetContent(), o -> {
             Intent intent = new Intent(EditAccountActivity.this, CropperActivity.class);
-            if(o != null) {
+            if (o != null) {
                 intent.putExtra("data", o.toString());
                 intent.putExtra("crop", "dp");
                 startActivityForResult(intent, 101);
@@ -153,7 +156,7 @@ public class EditAccountActivity extends AppCompatActivity {
 
         updateImage.setOnClickListener(v -> {
             buttons(false);
-            if(uriImage != null) {
+            if (uriImage != null) {
                 StorageReference ref = storageReference.child(user.getUid() + getFileExtension(uriImage));
 
                 ref.putFile(uriImage)
@@ -187,28 +190,25 @@ public class EditAccountActivity extends AppCompatActivity {
             String emailText = email.getText().toString();
             String usernameText = username.getText().toString();
 
-            if(nameText.isEmpty() || emailText.isEmpty() || usernameText.isEmpty()) {
+            if (nameText.isEmpty() || emailText.isEmpty() || usernameText.isEmpty()) {
                 promptTextview.setText("Please fill in all the fields");
                 imageView.setImageResource(R.drawable.baseline_error_24);
                 toast.show();
                 return;
             }
+
             controller.checkIfUsernameExists(usernameText, response -> {
-                if(originalUsername.equals(usernameText) && response) {
+                if (originalUsername.equals(usernameText) && response) {
                     response = false;
                 }
 
-                UserProfile profile = new UserProfile(nameText, emailText, usernameText, user_Profile.getClubCode(), user_Profile.getUserUID(), user.getPhotoUrl().toString());
-                if(!response) {
+                UserProfile profile = new UserProfile(nameText, emailText, usernameText, user_Profile.isAClub(), user_Profile.getUserUID(), user.getPhotoUrl().toString());
+                if (!response) {
                     controller.setUserData(profile, response1 -> {
-                        if(response1) {
-                            buttons(true);
-                        } else {
-                            promptTextview.setText("Details updation failed");
-                            imageView.setImageResource(R.drawable.baseline_error_24);
-                            toast.show();
-                            buttons(true);
-                        }
+                        promptTextview.setText("Details updated");
+                        imageView.setImageResource(R.drawable.baseline_cloud_done_24);
+                        toast.show();
+                        buttons(true);
                     });
                 } else {
                     promptTextview.setText("Username already taken");
@@ -225,7 +225,7 @@ public class EditAccountActivity extends AppCompatActivity {
         backBtn.setEnabled(status);
         saveChanges.setEnabled(status);
 
-        if(status) {
+        if (status) {
             lottieAnimationView.setVisibility(View.GONE);
             lottieAnimationView.pauseAnimation();
             darkBackground.setVisibility(View.INVISIBLE);
@@ -240,10 +240,10 @@ public class EditAccountActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 101 && resultCode == -1) {
+        if (requestCode == 101 && resultCode == -1) {
             String result = data.getStringExtra("result");
             Uri resultUri = null;
-            if(result != null) {
+            if (result != null) {
                 resultUri = Uri.parse(result);
                 uriImage = resultUri;
                 userImage.setImageURI(uriImage);

@@ -1,30 +1,32 @@
 package com.example.unilink.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.example.unilink.FirebaseController;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
-import com.example.unilink.recyclerAdapters.RecyclerMyPostAdapter;
 import com.example.unilink.viewPagerAdapter.ViewPagerMyPostAdapter;
-import com.example.unilink.viewPagerAdapter.ViewPagerPostAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +40,7 @@ public class MyAccountActivity extends AppCompatActivity {
     private TextView username, name;
     private ImageView profileImage;
 
+    private FirebaseUser user;
     private Button editProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,17 +66,20 @@ public class MyAccountActivity extends AppCompatActivity {
         });
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
+        user = auth.getCurrentUser();
 
         Uri uri = user.getPhotoUrl();
-        if(uri != null) {
+        if (uri != null) {
+            Log.d("MyAccountActivity", "Profile image URI: " + uri.toString());
             Picasso.get().load(uri).into(profileImage);
+        } else {
+            Log.d("MyAccountActivity", "No profile image URI found.");
         }
+
 
         controller.getUserData(userProfile -> {
             username.setText(userProfile.getUsername());
             name.setText(userProfile.getName());
-
         });
 
         backButton.setOnClickListener(v -> finish());
@@ -85,6 +91,15 @@ public class MyAccountActivity extends AppCompatActivity {
 
         tabLayout.setupWithViewPager(viewPager);
 
+        controller.getUserDataUsingUID(user.getUid(), userProfile -> {
+            username.setText(userProfile.getUsername());
+            name.setText(userProfile.getName());
+        });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
         controller.getUserDataUsingUID(user.getUid(), userProfile -> {
             username.setText(userProfile.getUsername());
             name.setText(userProfile.getName());

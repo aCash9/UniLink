@@ -32,7 +32,7 @@
                     android:background="@color/black"
                     android:drawablePadding="10dp"
                     android:fontFamily="@font/montserrat_semibold"
-                    android:text="Setting"
+                    android:text="Settings"
                     android:textColor="@color/white"
                     android:textSize="30sp"
                     android:letterSpacing="0.05"

@@ -21,9 +21,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
-import com.example.unilink.objects.ClubDetails;
 import com.example.unilink.objects.UserPosts;
 import com.example.unilink.objects.UserProfile;
 import com.google.android.exoplayer2.MediaItem;
@@ -34,7 +33,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.util.UUID;
 
@@ -52,7 +50,6 @@ public class AddReelActivity extends AppCompatActivity {
     private FirebaseController controller;
     private LottieAnimationView lottieAnimationView;
     private View darkBackground;
-    private ClubDetails details;
 
 
     @Override
@@ -84,10 +81,9 @@ public class AddReelActivity extends AppCompatActivity {
             profile = userProfile;
         });
 
-        controller.verifyIfPartOfAnyClub(clubDetails -> {
-            if(clubDetails != null) {
+        controller.verifyIfAClub(clubDetails -> {
+            if(clubDetails) {
                 uploadClub.setVisibility(View.VISIBLE);
-                details = clubDetails;
             }
         });
 
@@ -200,7 +196,7 @@ public class AddReelActivity extends AppCompatActivity {
                         .addOnSuccessListener(taskSnapshot -> {
                             ref.getDownloadUrl().addOnSuccessListener(uri -> {
 
-                                UserPosts userPosts = new UserPosts(details.getName(), postID, 0, String.valueOf(details.getClubImageURL()), String.valueOf(uri), captions, String.valueOf(System.currentTimeMillis()), user.getUid());
+                                UserPosts userPosts = new UserPosts(profile.getUsername(), postID, 0, String.valueOf(profile.getUserImageURI()), String.valueOf(uri), captions, String.valueOf(System.currentTimeMillis()), user.getUid());
                                 controller.addPost(1, userPosts, false, response -> {
                                     if(response) {
                                         promptTextview.setText("Post uploaded successfully");

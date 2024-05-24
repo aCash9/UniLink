@@ -7,4 +7,8 @@
     </style>
 
     <style name="Theme.UniLink" parent="Base.Theme.UniLink" />
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_bottom</item>
+    </style>
 </resources>

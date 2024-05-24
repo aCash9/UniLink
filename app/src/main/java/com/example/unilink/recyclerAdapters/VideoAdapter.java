@@ -14,7 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.activity.ProfileActivity;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.callback.OnVideoPreparedListener;
 import com.example.unilink.objects.ExoPlayerItem;
@@ -38,7 +39,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     private final Context context;
     private final ArrayList<UserPosts> videos;
     private final OnVideoPreparedListener videoPreparedListener;
-    boolean flag = true;
+    int flag = 0;
+    private boolean liked = false;
 
     private final FirebaseController controller;
     private final FirebaseUser user;
@@ -62,38 +64,56 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public void onBindViewHolder(@NonNull VideoAdapter.VideoViewHolder holder, int position) {
         UserPosts post = videos.get(position);
         holder.setVideoPath(post.getPostImageURL());
-        Picasso.get().load(videos.get(position).getUserImageURL()).into(holder.profile_pic);
+        if(post.getUserImageURL().isEmpty()) {
+            holder.profile_pic.setImageResource(R.drawable.user_profile_standard);
+        } else {
+            Picasso.get().load(post.getUserImageURL()).into(holder.profile_pic);
+        }
         holder.username.setText(videos.get(position).getUsername());
         String likes = String.valueOf(videos.get(position).getLike());
         holder.like_counter.setText(likes);
         holder.caption.setText(videos.get(position).getCaption());
 
+        holder.username.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ProfileActivity.class);
+            intent.putExtra("user", videos.get(position).getUserUID());
+            context.startActivity(intent);
+        });
+
         holder.sound.setOnClickListener(v -> {
-            if(flag) {
+            if(flag == 0) {
                 holder.muteVideo(true);
                 holder.sound.setImageResource(R.drawable.mute);
+                flag = 1;
             }
             else {
-                holder.muteVideo(false);
+                holder.muteVideo(true);
                 holder.sound.setImageResource(R.drawable.sound);
+                flag = 0;
             }
-            flag = !flag;
         });
 
         controller.checkIfAlreadyLiked(2, videos.get(position).getPostID(), user.getUid(), response -> {
             if(response) {
                 holder.like.setImageResource(R.drawable.living_filled_red);
-                holder.like.setEnabled(false);
+                liked = true;
             }
         });
 
         holder.like.setOnClickListener(v -> {
-            controller.addLikeToPost(2, videos.get(position).getPostID(), user.getUid());
-            controller.addLikeToUserPost(videos.get(position));
-            holder.like.setImageResource(R.drawable.living_filled_red);
-            holder.like.setEnabled(false);
-            holder.like_counter.setText(String.valueOf(videos.get(position).getLike() + 1));
-            controller.incrementLike(2, videos.get(position).getPostID());
+            if(liked) {
+                controller.PostLikeOperation(false,2, videos.get(position).getPostID(), user.getUid());
+                controller.removeLikeToUserPost(videos.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_white);
+                holder.like_counter.setText(String.valueOf(videos.get(position).getLike() - 1));
+                controller.changeLike(false,2, videos.get(position).getPostID());
+            } else {
+                controller.PostLikeOperation(true,2, videos.get(position).getPostID(), user.getUid());
+                controller.addLikeToUserPost(videos.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_red);
+                holder.like_counter.setText(String.valueOf(videos.get(position).getLike() + 1));
+                controller.changeLike(true,2, videos.get(position).getPostID());
+            }
         });
 
         holder.share.setOnClickListener(v -> {
@@ -155,7 +175,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             exoPlayer = new ExoPlayer.Builder(context).build();
             exoPlayer.addListener(new Player.Listener() {
                 @Override
-                public void onPlayerError(PlaybackException error) {
+                public void onPlayerError(@NonNull PlaybackException error) {
                     Player.Listener.super.onPlayerError(error);
                 }
 

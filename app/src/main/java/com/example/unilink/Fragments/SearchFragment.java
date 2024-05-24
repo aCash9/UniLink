@@ -13,11 +13,10 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
-import com.example.unilink.activity.EventsActivity;
+import com.example.unilink.activity.events.EventsActivity;
 import com.example.unilink.activity.ProfileActivity;
-import com.example.unilink.callback.IntegerCallback;
 
 public class SearchFragment extends Fragment {
     public SearchFragment() {

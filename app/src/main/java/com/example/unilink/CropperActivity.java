@@ -11,6 +11,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.unilink.activity.AddNewPostActivity;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.AspectRatio;
 
@@ -42,7 +43,7 @@ public class CropperActivity extends AppCompatActivity {
             options.setCircleDimmedLayer(true);
             options.setShowCropFrame(false);
             options.setShowCropGrid(false);
-        } else {
+        } else if(type.equals("post")){
             options.setFreeStyleCropEnabled(false);
             options.setAspectRatioOptions(
                     0, // Index of the aspect ratio to be selected by default
@@ -52,7 +53,6 @@ public class CropperActivity extends AppCompatActivity {
             options.setShowCropFrame(true); // Show crop frame
             options.setShowCropGrid(true); // Show crop grid
         }
-
 
         UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), dest_uri)))
                 .withOptions(options)

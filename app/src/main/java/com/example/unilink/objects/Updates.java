@@ -4,14 +4,24 @@ public class Updates {
     String title;
     String text;
     boolean cancellable;
+    int version;
 
     public Updates() {
     }
 
-    public Updates(String title, String text, boolean cancellable) {
+    public Updates(String title, String text, boolean cancellable, int version) {
         this.title = title;
         this.text = text;
         this.cancellable = cancellable;
+        this.version = version;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public String getTitle() {

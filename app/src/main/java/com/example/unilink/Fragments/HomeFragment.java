@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.unilink.activity.AddNewPostActivity;
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.activity.AddReelActivity;
 import com.example.unilink.recyclerAdapters.RecyclerClubPostAdapter;
@@ -37,10 +37,10 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
     }
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private FirebaseController controller;
     private LottieAnimationView lottieAnimationView;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
     private int flag = 0;
     Dialog dialog;
 
@@ -73,21 +73,19 @@ public class HomeFragment extends Fragment {
         text = dialog.findViewById(R.id.text);
 
         SharedPreferences preferences = getContext().getSharedPreferences("updateChecked", MODE_PRIVATE);
-        boolean checked = preferences.getBoolean("updateChecked", false);
+        int version = preferences.getInt("updateChecked", 0);
 
-        if(!checked) {
-            controller.checkUpdates(update -> {
-                if(!(update == null)) {
-                    if(!update.isCancellable()) {
-                        dialog.setCancelable(false);
-                    }
-                    text.setText(update.getText());
-                    title.setText(update.getTitle());
-                    dialog.show();
-                    preferences.edit().putBoolean("updateChecked", true).apply();
+        controller.checkUpdates(update -> {
+            if(!(update == null) && version != update.getVersion()) {
+                if(!update.isCancellable()) {
+                    dialog.setCancelable(false);
                 }
-            });
-        }
+                text.setText(update.getText());
+                title.setText(update.getTitle());
+                dialog.show();
+                preferences.edit().putInt("updateChecked", update.getVersion()).apply();
+            }
+        });
 
 
         Animation open = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_open_anim);
@@ -135,14 +133,14 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if(flag == 0) {
                 controller.getPosts(0, posts -> {
-                    RecyclerClubPostAdapter adapter = new RecyclerClubPostAdapter(getActivity(), posts);
+                    RecyclerPostAdapter adapter = new RecyclerPostAdapter(getActivity(), posts);
                     recyclerView.setAdapter(adapter);
                     swipeRefreshLayout.setRefreshing(false);
                     loading(false);
                 });
             } else {
                 controller.getPosts(1, posts -> {
-                    RecyclerPostAdapter adapter = new RecyclerPostAdapter(getActivity(), posts);
+                    RecyclerClubPostAdapter adapter = new RecyclerClubPostAdapter(getActivity(), posts);
                     recyclerView.setAdapter(adapter);
                     swipeRefreshLayout.setRefreshing(false);
                     loading(false);
@@ -152,14 +150,14 @@ public class HomeFragment extends Fragment {
 
         switchbtn.setOnClickListener(v -> {
           if(flag == 0) {
-              controller.getPosts(0, posts -> {
+              controller.getPosts(1, posts -> {
                   RecyclerClubPostAdapter adapter = new RecyclerClubPostAdapter(getActivity(), posts);
                   recyclerView.setAdapter(adapter);
                   loading(false);
               });
               flag = 1;
           } else {
-              controller.getPosts(1, posts -> {
+              controller.getPosts(0, posts -> {
                   RecyclerPostAdapter adapter = new RecyclerPostAdapter(getActivity(), posts);
                   recyclerView.setAdapter(adapter);
                   loading(false);

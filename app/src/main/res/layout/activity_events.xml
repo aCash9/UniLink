@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".activity.EventsActivity">
+    tools:context=".activity.events.EventsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -53,17 +53,61 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:layout_marginStart="10dp"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/appbar"
+        android:layout_width="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_below="@id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:background="@color/black"
-        android:layout_centerInParent="true"
-        android:drawablePadding="10dp"
-        android:fontFamily="@font/montserrat"
-        android:layout_margin="30dp"
-        android:text="Coming soon!!\nPlace to find and register for events from all the clubs of the college."
-        android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/addReel"
+        android:layout_marginBottom="10dp"
+        app:srcCompat="@drawable/add_image_post"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        android:backgroundTint="@color/purple"
+        android:layout_marginEnd="24dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addReel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_alignParentEnd="true"
+        android:focusable="true"
+        app:srcCompat="@drawable/event_icon"
+        android:layout_above="@id/addPost"
+        android:layout_marginBottom="10dp"
+        android:tint="@color/white"
+        android:visibility="invisible"
+        android:backgroundTint="@color/purple"
+        android:layout_marginEnd="24dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="24dp"
+        app:srcCompat="@drawable/add_icon"
+        android:tint="@color/white"
+        android:backgroundTint="@color/purple"
+        android:layout_marginEnd="24dp"/>
 </RelativeLayout>

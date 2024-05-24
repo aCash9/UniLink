@@ -10,10 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.recyclerAdapters.RecyclerMyPostAdapter;
-import com.example.unilink.recyclerAdapters.RecyclerSearchedUserPostAdapter;
 
 public class MyPostFragment extends Fragment {
     public MyPostFragment() {

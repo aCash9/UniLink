@@ -1,5 +1,6 @@
 package com.example.unilink.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -23,7 +24,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +45,9 @@ public class RegisterActivity extends AppCompatActivity {
     private ImageButton back;
     private Button signup;
     private FirebaseController controller;
+    private SoftInputAssist softInputAssist;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +59,8 @@ public class RegisterActivity extends AppCompatActivity {
             return insets;
         });
 
-        //Progress bar
+        softInputAssist = new SoftInputAssist(this);
+
 
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
@@ -67,7 +71,6 @@ public class RegisterActivity extends AppCompatActivity {
         lottieAnimationView = findViewById(R.id.animationView);
         darkBackground = findViewById(R.id.darkBackground);
         usernameEditText = findViewById(R.id.username);
-
         lottieAnimationView.setAnimation(R.raw.register_animation);
         loading(false);
 
@@ -77,7 +80,6 @@ public class RegisterActivity extends AppCompatActivity {
             lottieAnimationView.setVisibility(View.GONE);
             back.setEnabled(true);
             signup.setEnabled(true);
-            // Stop the animation
             lottieAnimationView.cancelAnimation();
         };
 
@@ -92,6 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
         usernameEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && !flag[0]) {
                 animateAndHideGraphic();
+
                 flag[0] = true;
             }
         });
@@ -110,9 +113,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        back.setOnClickListener(v -> {
-            finish();
-        });
+        back.setOnClickListener(v -> finish());
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         controller = new FirebaseController();
@@ -134,12 +135,12 @@ public class RegisterActivity extends AppCompatActivity {
                 toast.setDuration(Toast.LENGTH_LONG);
                 if(!response1) {
                     loading(true);
-                    UserProfile profile = new UserProfile(name, email, username, "", "", "");
+                    UserProfile profile = new UserProfile(name, email, username, false, "", "error");
                     collapseKeyboard();
 
                     auth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
+                                if (task.isSuccessful() && auth.getCurrentUser() != null) {
                                     auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(task1 -> {
                                         if(task1.isSuccessful()) {
                                             FirebaseController controller = new FirebaseController();
@@ -148,8 +149,6 @@ public class RegisterActivity extends AppCompatActivity {
                                                 promptTextview.setText("User Registered Successfully\nPLease verify your email");
                                                 imageView.setImageResource(R.drawable.baseline_cloud_done_24);
                                                 toast.show();
-//                                        loading(false);
-
                                                 handler.postDelayed(hideGraphic, 500);
                                             });
                                         } else {
@@ -193,6 +192,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private boolean checkEditTextFields(String email, String name, String password, String username) {
         if (email.isEmpty()) {
             emailEditText.requestFocus();
@@ -250,6 +250,8 @@ public class RegisterActivity extends AppCompatActivity {
             darkBackground.setVisibility(View.GONE);
             lottieAnimationView.pauseAnimation();
             lottieAnimationView.setVisibility(View.GONE);
+            back.setEnabled(true);
+            signup.setEnabled(true);
         }
     }
 
@@ -307,5 +309,24 @@ public class RegisterActivity extends AppCompatActivity {
         animationSet.addAnimation(fadeOutAnimation);
         animationSet.addAnimation(translateAnimation);
         return animationSet;
+    }
+
+
+    @Override
+    protected void onResume() {
+        softInputAssist.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        softInputAssist.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        softInputAssist.onPause();
+        super.onPause();
     }
 }

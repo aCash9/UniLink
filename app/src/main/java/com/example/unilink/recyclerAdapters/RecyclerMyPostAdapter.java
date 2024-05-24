@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.UserPosts;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
@@ -27,6 +27,7 @@ public class RecyclerMyPostAdapter extends RecyclerView.Adapter<RecyclerMyPostAd
     private final FirebaseController controller;
     private final FirebaseUser user;
 
+    private boolean liked = false;
 
     public RecyclerMyPostAdapter(Context context, ArrayList<UserPosts> list) {
         this.context = context;
@@ -57,17 +58,24 @@ public class RecyclerMyPostAdapter extends RecyclerView.Adapter<RecyclerMyPostAd
         controller.checkIfAlreadyLiked(0, list.get(position).getPostID(), user.getUid(), response -> {
            if(response) {
                holder.like.setImageResource(R.drawable.living_filled_red);
-               holder.like.setEnabled(false);
+               liked = true;
            }
         });
 
         holder.like.setOnClickListener(v -> {
-            controller.addLikeToPost(0, list.get(position).getPostID(), user.getUid());
-            controller.addLikeToUserPost(list.get(position));
-            holder.like.setImageResource(R.drawable.living_filled_red);
-            holder.like.setEnabled(false);
-            holder.likes_counter.setText(String.valueOf(list.get(position).getLike() + 1));
-            controller.incrementLike(0, list.get(position).getPostID());
+            if(liked) {
+                controller.PostLikeOperation(false,0, list.get(position).getPostID(), user.getUid());
+                controller.removeLikeToUserPost(list.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_white);
+                holder.likes_counter.setText(String.valueOf(list.get(position).getLike() - 1));
+                controller.changeLike(false,0, list.get(position).getPostID());
+            } else {
+                controller.PostLikeOperation(true, 0, list.get(position).getPostID(), user.getUid());
+                controller.addLikeToUserPost(list.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_red);
+                holder.likes_counter.setText(String.valueOf(list.get(position).getLike() + 1));
+                controller.changeLike(true, 0, list.get(position).getPostID());
+            }
         });
 
         holder.delete.setOnClickListener(v -> {

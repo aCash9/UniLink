@@ -11,7 +11,6 @@ public class UserPosts {
     String caption;
     String timestamp;
     String userUID;
-    String type;
 
     public UserPosts() {}
 

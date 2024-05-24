@@ -8,11 +8,10 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.ExoPlayerItem;
 import com.example.unilink.recyclerAdapters.MyReelsAdapter;
-import com.example.unilink.recyclerAdapters.UserReelsAdapter;
 
 import java.util.ArrayList;
 

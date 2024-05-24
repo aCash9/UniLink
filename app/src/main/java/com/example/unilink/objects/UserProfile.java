@@ -4,15 +4,15 @@ public class UserProfile {
     String name;
     String email;
     String username;
-    String clubCode;
+    boolean isAClub;
     String userUID;
     String userImageURI;
 
-    public UserProfile(String name, String email, String username, String clubCode, String userUID, String userImageURI) {
+    public UserProfile(String name, String email, String username, boolean isAClub, String userUID, String userImageURI) {
         this.name = name;
         this.email = email;
         this.username = username;
-        this.clubCode = clubCode;
+        this.isAClub = isAClub;
         this.userUID = userUID;
         this.userImageURI = userImageURI;
     }
@@ -33,12 +33,12 @@ public class UserProfile {
         this.userUID = userUID;
     }
 
-    public String getClubCode() {
-        return clubCode;
+    public boolean isAClub() {
+        return isAClub;
     }
 
-    public void setClubCode(String clubCode) {
-        this.clubCode = clubCode;
+    public void setAClub(boolean AClub) {
+        isAClub = AClub;
     }
 
     public UserProfile() {

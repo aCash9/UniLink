@@ -96,7 +96,6 @@
             <ImageView
                 android:id="@+id/userImage"
                 android:layout_width="100dp"
-                android:src="@drawable/male_user_dp"
                 android:layout_height="100dp"
                 android:contentDescription="userImage"
                 android:scaleType="centerCrop"/>

@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.unilink.FirebaseController;
+import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.objects.ExoPlayerItem;
 import com.example.unilink.recyclerAdapters.VideoAdapter;
@@ -46,7 +46,6 @@ public class ReelsFragment extends Fragment {
             });
             setAdapterAndViewPagerCallback();
         });
-
 
 
         return inflate;
