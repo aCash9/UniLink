@@ -1,28 +1,31 @@
 package com.example.unilink.objects;
 
+import java.util.ArrayList;
+
 public class Product {
     String productID;
     String amount;
     String contactInfo;
     String description;
-    String productImage1;
-    String productImage2;
-    String productImage3;
+    ArrayList<String> images;
     String timestamp;
     String userUID;
 
     public Product() {
     }
-    public Product(String productID, String amount, String contactInfo, String description, String productImage1, String productImage2, String productImage3, String timestamp, String userUID) {
+
+    public Product(String productID, String amount, String contactInfo, String description, ArrayList<String> images, String timestamp, String userUID) {
         this.productID = productID;
         this.amount = amount;
         this.contactInfo = contactInfo;
         this.description = description;
-        this.productImage1 = productImage1;
-        this.productImage2 = productImage2;
-        this.productImage3 = productImage3;
+        this.images = images;
         this.timestamp = timestamp;
         this.userUID = userUID;
+    }
+
+    public ArrayList<String> getImages() {
+        return images;
     }
 
     public String getProductID() {
@@ -41,17 +44,6 @@ public class Product {
         return description;
     }
 
-    public String getProductImage1() {
-        return productImage1;
-    }
-
-    public String getProductImage2() {
-        return productImage2;
-    }
-
-    public String getProductImage3() {
-        return productImage3;
-    }
 
     public String getTimestamp() {
         return timestamp;

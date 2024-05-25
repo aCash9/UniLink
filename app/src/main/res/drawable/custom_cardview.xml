@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow Layer -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#ffffff"/>
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+    <!-- Border Layer -->
+    <item android:right="1dp" android:left="1dp" android:top="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+            <stroke android:width="2dp" android:color="#FF0000"/> <!-- Red stroke color -->
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+    <!-- Main Content Layer -->
+    <item android:right="2dp" android:left="2dp" android:top="2dp" android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#00FF00"/> <!-- Green background color -->
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+</layer-list>

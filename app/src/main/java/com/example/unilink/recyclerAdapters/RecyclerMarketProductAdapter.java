@@ -27,8 +27,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public class RecyclerMarketProductAdapter extends RecyclerView.Adapter<RecyclerMarketProductAdapter.ViewHolder> {
     private final Context context;
@@ -57,16 +59,17 @@ public class RecyclerMarketProductAdapter extends RecyclerView.Adapter<RecyclerM
         Product product = list.get(position);
 
         ArrayList<SlideModel> images = new ArrayList<>();
-        images.add(new SlideModel(product.getProductImage1(), ScaleTypes.FIT));
-        images.add(new SlideModel(product.getProductImage2(), ScaleTypes.FIT));
-        images.add(new SlideModel(product.getProductImage3(), ScaleTypes.FIT));
+        for(String url: product.getImages()) {
+            images.add(new SlideModel(url, ScaleTypes.FIT));
+        }
 
         holder.image.setImageList(images);
 
-        holder.amount.setText(product.getAmount());
+        holder.amount.setText("₹" + product.getAmount());
 
-        String time = TimeAgo.Companion.using(Long.parseLong(list.get(position).getTimestamp()));
-        holder.timestamp.setText(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = sdf.format(new Date(Long.parseLong(product.getTimestamp())));
+        holder.timestamp.setText(formattedDate);
 
         holder.save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +95,7 @@ public class RecyclerMarketProductAdapter extends RecyclerView.Adapter<RecyclerM
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageSlider image;
         TextView amount, timestamp;
-        ImageButton save;
+        ImageButton save, info;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -101,6 +104,7 @@ public class RecyclerMarketProductAdapter extends RecyclerView.Adapter<RecyclerM
             timestamp = itemView.findViewById(R.id.timestamp);
             amount = itemView.findViewById(R.id.amount);
             save = itemView.findViewById(R.id.save);
+            info = itemView.findViewById(R.id.info);
         }
 
     }

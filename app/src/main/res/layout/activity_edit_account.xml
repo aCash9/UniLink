@@ -66,43 +66,50 @@
             android:orientation="horizontal"
             />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
-            android:layout_width="wrap_content"
-            android:layout_below="@id/line1"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp"
-            app:cardCornerRadius="800dp"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/userImage"
+            <RelativeLayout
+                android:id="@+id/relative"
                 android:layout_width="170dp"
-                android:src="@drawable/user_profile_standard"
                 android:layout_height="170dp"
-                android:contentDescription="userImage"
-                android:scaleType="centerCrop"/>
-        </androidx.cardview.widget.CardView>
+                android:layout_below="@id/line1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp">
 
-        <TextView
-            android:id="@+id/chooseImage"
-            android:text="Choose a new image️"
-            android:textSize="16sp"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/purple"
-            android:fontFamily="@font/montserrat"
-            android:layout_below="@id/cardView"
-            android:textAlignment="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="800dp">
 
-            <TextView
+                    <ImageView
+                        android:id="@+id/userImage"
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        android:contentDescription="userImage"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/user_profile_standard" />
+                </androidx.cardview.widget.CardView>
+
+                <ImageButton
+                    android:id="@+id/chooseImage"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:rotation="5"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/edit_icon" />
+            </RelativeLayout>
+
+            <Button
                 android:id="@+id/updateImage"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:text="Update Image"
-                android:textSize="16sp"
+                android:textSize="22sp"
                 android:layout_marginTop="10dp"
+                android:layout_marginStart="80dp"
+                android:layout_marginEnd="80dp"
                 android:textColor="@color/purple"
                 android:fontFamily="@font/montserrat"
-                android:layout_below="@id/chooseImage"
+                android:layout_below="@id/relative"
                 android:textAlignment="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

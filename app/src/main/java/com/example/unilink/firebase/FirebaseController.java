@@ -1,5 +1,6 @@
 package com.example.unilink.firebase;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import com.example.unilink.callback.ClubEventCallback;
 import com.example.unilink.callback.IntegerCallback;
 import com.example.unilink.callback.ProductListCallback;
 import com.example.unilink.callback.UpdatesCallback;
+import com.example.unilink.callback.UrlListCallback;
 import com.example.unilink.callback.UserPostsCallback;
 import com.example.unilink.callback.booleanCallback;
 import com.example.unilink.callback.userProfileCallback;
@@ -29,19 +31,23 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class FirebaseController {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private final CollectionReference userCol = db.collection("users");
     private final CollectionReference postCol = db.collection("posts");
     private final CollectionReference reelsCol = db.collection("reels");
@@ -52,10 +58,16 @@ public class FirebaseController {
     private final CollectionReference productsCol = db.collection("products");
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
+    public FirebaseController() {
+        db.setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build());
+    }
+
     public void setUserData(UserProfile profile, booleanCallback callback) {
         db.enableNetwork();
         FirebaseUser user = auth.getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             DocumentReference docRef = userCol.document(user.getUid());
             docRef.set(profile)
                     .addOnCompleteListener(task -> callback.response(task.isSuccessful()));
@@ -66,14 +78,14 @@ public class FirebaseController {
     public void getUserData(userProfileCallback callback) {
         db.enableNetwork();
         FirebaseUser user = auth.getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             DocumentReference docRef = userCol.document(user.getUid());
             docRef.get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             UserProfile profile;
-                            if(document != null) {
+                            if (document != null) {
                                 profile = document.toObject(UserProfile.class);
                             } else {
                                 profile = new UserProfile("Error", "Error", "", false, "", "");
@@ -91,7 +103,7 @@ public class FirebaseController {
         userCol.whereEqualTo("username", username)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         callback.response(!task.getResult().isEmpty());
                     }
                 });
@@ -99,8 +111,8 @@ public class FirebaseController {
 
     public void addPost(int code, UserPosts post, boolean type, booleanCallback callback) {
         DocumentReference docRef;
-        if(type) {
-            if(code == 0) {
+        if (type) {
+            if (code == 0) {
                 docRef = postCol.document(post.getPostID());
                 addToUserPost(post, true);
             } else {
@@ -108,7 +120,7 @@ public class FirebaseController {
                 addToUserPost(post, true);
             }
         } else {
-            if(code == 0) {
+            if (code == 0) {
                 addToUserPost(post, false);
             }
             docRef = reelsCol.document(post.getPostID());
@@ -127,7 +139,7 @@ public class FirebaseController {
 
     private void addToUserPost(UserPosts post, boolean type) {
         String col;
-        if(type) {
+        if (type) {
             col = "posts";
         } else {
             col = "reels";
@@ -140,9 +152,9 @@ public class FirebaseController {
     public void getPosts(int code, UserPostsCallback callback) {
         ArrayList<UserPosts> list = new ArrayList<>();
         CollectionReference colUsed;
-        if(code == 0) {
+        if (code == 0) {
             colUsed = postCol;
-        } else if(code == 1) {
+        } else if (code == 1) {
             colUsed = clubPostCol;
         } else {
             colUsed = reelsCol;
@@ -163,14 +175,14 @@ public class FirebaseController {
 
     public void changeLike(boolean op, int code, String postID) {
         DocumentReference docRef;
-        if(code == 0) {
+        if (code == 0) {
             docRef = postCol.document(postID);
-        } else if(code == 1){
+        } else if (code == 1) {
             docRef = clubPostCol.document(postID);
         } else {
             docRef = reelsCol.document(postID);
         }
-        if(op)
+        if (op)
             docRef.update("like", FieldValue.increment(1));
         else
             docRef.update("like", FieldValue.increment(-1));
@@ -181,14 +193,14 @@ public class FirebaseController {
         likeData.put("userId", uid);
         likeData.put("timestamp", FieldValue.serverTimestamp());
         DocumentReference docRef;
-        if(code == 0){
+        if (code == 0) {
             docRef = postCol.document(postID).collection("likes").document(uid);
-        } else if(code == 1){
+        } else if (code == 1) {
             docRef = clubPostCol.document(postID).collection("likes").document(uid);
         } else {
             docRef = reelsCol.document(postID).collection("likes").document(uid);
         }
-        if(op)
+        if (op)
             docRef.set(likeData);
         else
             docRef.delete();
@@ -199,21 +211,20 @@ public class FirebaseController {
         likeData.put("userId", uid);
         likeData.put("timestamp", FieldValue.serverTimestamp());
         DocumentReference docRef;
-        if(code == 0){
+        if (code == 0) {
             docRef = postCol.document(postID).collection("likes").document(uid);
-        } else if(code == 1){
+        } else if (code == 1) {
             docRef = clubPostCol.document(postID).collection("likes").document(uid);
         } else {
             docRef = reelsCol.document(postID).collection("likes").document(uid);
         }
 
         changeLike(op, code, postID);
-        if(op)
+        if (op)
             return docRef.set(likeData);
         else
             return docRef.delete();
     }
-
 
 
     public void checkIfAlreadyLiked(int code, String postID, String uid, booleanCallback callback) {
@@ -244,13 +255,13 @@ public class FirebaseController {
     }
 
 
-    public void verifyIfAClub(booleanCallback callback){
+    public void verifyIfAClub(booleanCallback callback) {
         FirebaseUser user = auth.getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             DocumentReference docRef = clubInfoCol.document(user.getUid());
             docRef.get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             boolean exists = task.getResult().exists();
                             callback.response(exists);
                         }
@@ -278,9 +289,9 @@ public class FirebaseController {
         userUploadsCol.document(uid).collection("posts")
                 .get()
                 .addOnCompleteListener(task1 -> {
-                    if(task1.isSuccessful()) {
-                        if(!task1.getResult().isEmpty()) {
-                            for(DocumentSnapshot document : task1.getResult()) {
+                    if (task1.isSuccessful()) {
+                        if (!task1.getResult().isEmpty()) {
+                            for (DocumentSnapshot document : task1.getResult()) {
                                 UserPosts post = document.toObject(UserPosts.class);
                                 posts.add(post);
                             }
@@ -294,12 +305,12 @@ public class FirebaseController {
 
     public void getMyProducts(ProductListCallback callback) {
         ArrayList<Product> list = new ArrayList<>();
-        if(auth.getCurrentUser() != null) {
+        if (auth.getCurrentUser() != null) {
             productsCol.whereEqualTo("userUID", auth.getCurrentUser().getUid())
                     .get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
-                            for(DocumentSnapshot document : task.getResult()) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
                                 Product product = document.toObject(Product.class);
                                 list.add(product);
                             }
@@ -311,16 +322,15 @@ public class FirebaseController {
     }
 
 
-
     public void getMyReels(String uid, UserPostsCallback callback) {
         ArrayList<UserPosts> posts = new ArrayList<>();
 
         userUploadsCol.document(uid).collection("reels")
                 .get()
                 .addOnCompleteListener(task1 -> {
-                    if(task1.isSuccessful()) {
-                        if(!task1.getResult().isEmpty()) {
-                            for(DocumentSnapshot document : task1.getResult()) {
+                    if (task1.isSuccessful()) {
+                        if (!task1.getResult().isEmpty()) {
+                            for (DocumentSnapshot document : task1.getResult()) {
                                 UserPosts post = document.toObject(UserPosts.class);
                                 posts.add(post);
                             }
@@ -333,9 +343,9 @@ public class FirebaseController {
     }
 
     public void deleteMyProduct(Product product, booleanCallback callback) {
-        deleteMediaUsingURL(product.getProductImage1());
-        deleteMediaUsingURL(product.getProductImage2());
-        deleteMediaUsingURL(product.getProductImage3());
+        for (String url : product.getImages()) {
+            deleteMediaUsingURL(url);
+        }
         DocumentReference docRef = productsCol.document(product.getProductID());
         docRef.delete()
                 .addOnCompleteListener(task -> callback.response(task.isSuccessful()));
@@ -346,7 +356,7 @@ public class FirebaseController {
         DocumentReference docRef;
         deleteFromPosts(postID);
         deleteMediaUsingURL(postURL);
-        if(auth.getCurrentUser() != null) {
+        if (auth.getCurrentUser() != null) {
             docRef = userUploadsCol.document(auth.getCurrentUser().getUid()).collection("posts").document(postID);
             docRef.delete()
                     .addOnCompleteListener(task -> callback.response(task.isSuccessful()));
@@ -364,7 +374,7 @@ public class FirebaseController {
         DocumentReference docRef;
         deleteFromReels(postID);
         deleteMediaUsingURL(postURL);
-        if(auth.getCurrentUser() != null) {
+        if (auth.getCurrentUser() != null) {
             docRef = userUploadsCol.document(auth.getCurrentUser().getUid()).collection("reels").document(postID);
             docRef.delete();
             deleteTheLikes(docRef);
@@ -389,10 +399,10 @@ public class FirebaseController {
         CollectionReference documentReference = docRef.collection("likes");
         documentReference.get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         WriteBatch batch = db.batch();
                         QuerySnapshot snapshot = task.getResult();
-                        for(DocumentSnapshot document : snapshot.getDocuments()) {
+                        for (DocumentSnapshot document : snapshot.getDocuments()) {
                             batch.delete(document.getReference());
                         }
                         batch.commit();
@@ -401,14 +411,12 @@ public class FirebaseController {
     }
 
 
-
-
     public void findUser(String username, userProfileCallback callback) {
         userCol.whereEqualTo("username", username)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        if(!task.getResult().isEmpty()) {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
                             DocumentSnapshot document = task.getResult().getDocuments().get(0);
                             UserProfile profile = document.toObject(UserProfile.class);
                             callback.onProfileLoaded(profile);
@@ -424,10 +432,10 @@ public class FirebaseController {
 
         docRef.get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         UserProfile profile;
-                        if(document != null) {
+                        if (document != null) {
                             profile = document.toObject(UserProfile.class);
                         } else {
                             profile = new UserProfile("Error", "Error", "", false, "", "");
@@ -463,7 +471,7 @@ public class FirebaseController {
     public void getNumberOfUser(IntegerCallback callback) {
         userCol.get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         int count = task.getResult().size();
                         callback.count(count);
                     }
@@ -475,9 +483,9 @@ public class FirebaseController {
         ArrayList<ClubEventCard> clubs = new ArrayList<>();
         clubInfoCol.get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        if(!task.getResult().isEmpty()) {
-                            for(DocumentSnapshot document : task.getResult()) {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            for (DocumentSnapshot document : task.getResult()) {
                                 ClubEventCard post = document.toObject(ClubEventCard.class);
                                 clubs.add(post);
                             }
@@ -490,7 +498,7 @@ public class FirebaseController {
     }
 
     public void updateClubBanner(String url, booleanCallback callback) {
-        if(auth.getCurrentUser() != null) {
+        if (auth.getCurrentUser() != null) {
             DocumentReference docRef = clubInfoCol.document(auth.getCurrentUser().getUid());
             Map<String, Object> updates = new HashMap<>();
             updates.put("bannerURL", url);
@@ -508,11 +516,11 @@ public class FirebaseController {
 
     public void addEvent(Event event, booleanCallback callback) {
         FirebaseUser user = auth.getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             DocumentReference docRef = clubInfoCol.document(user.getUid()).collection("events").document(event.getEid());
             docRef.set(event)
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful())
+                        if (task.isSuccessful())
                             callback.response(true);
                         else
                             callback.response(false);
@@ -524,13 +532,13 @@ public class FirebaseController {
     public void getEvents(String clubUID, ClubEventCallback callback) {
         ArrayList<Event> list = new ArrayList<>();
 
-        if(clubUID != null) {
+        if (clubUID != null) {
             CollectionReference colRef = clubInfoCol.document(clubUID).collection("events");
             colRef.orderBy("timestamp", Query.Direction.DESCENDING)
                     .get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
-                            if(!task.getResult().isEmpty()) {
+                        if (task.isSuccessful()) {
+                            if (!task.getResult().isEmpty()) {
                                 for (DocumentSnapshot document : task.getResult()) {
                                     Event event = document.toObject(Event.class);
                                     list.add(event);
@@ -552,6 +560,47 @@ public class FirebaseController {
 
 
     public void getMarketPlaceProducts(ProductListCallback callback) {
-
+        ArrayList<Product> clubs = new ArrayList<>();
+        productsCol.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Product post = document.toObject(Product.class);
+                                clubs.add(post);
+                            }
+                            callback.response(clubs);
+                        }
+                        callback.response(clubs);
+                    } else {
+                        callback.response(clubs);
+                    }
+                });
     }
+
+    public void uploadPhotosAndGenerateUrls(ArrayList<Uri> uriList, UrlListCallback callBack) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference("marketPLace");
+        ArrayList<String> downloadUrls = new ArrayList<>();
+
+        for (Uri photoUri : uriList) {
+            String fileName = "images/" + UUID.randomUUID().toString() + ".jpg";
+            StorageReference photoRef = storageRef.child(fileName);
+
+            UploadTask uploadTask = photoRef.putFile(photoUri);
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+                downloadUrlTask.addOnSuccessListener(downloadUrl -> {
+                    String url = downloadUrl.toString();
+                    downloadUrls.add(url);
+
+                    if (downloadUrls.size() == uriList.size()) {
+                        callBack.response(downloadUrls);
+                    }
+                });
+            });
+        }
+    }
+
+
 }

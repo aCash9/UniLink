@@ -1,22 +1,28 @@
 package com.example.unilink.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.unilink.R;
+import com.example.unilink.activity.AddProductActivity;
 import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.recyclerAdapters.RecyclerMarketProductAdapter;
 import com.example.unilink.recyclerAdapters.RecyclerPostAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MarketPlaceFragment extends Fragment {
 
@@ -40,14 +46,30 @@ public class MarketPlaceFragment extends Fragment {
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         swipeRefreshLayout = inflate.findViewById(R.id.swipeRefreshLayout);
         lottieAnimationView = inflate.findViewById(R.id.animationView);
-        loading(false);
+        recyclerView = inflate.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        loading(true);
 
         controller.getMarketPlaceProducts(posts -> {
-            RecyclerMarketProductAdapter adapter = new RecyclerMarketProductAdapter(getActivity(), posts);
+            RecyclerMarketProductAdapter adapter = new RecyclerMarketProductAdapter(getContext(), posts);
             recyclerView.setAdapter(adapter);
             loading(false);
         });
 
+        swipeRefreshLayout.setOnRefreshListener(() -> controller.getMarketPlaceProducts(posts -> {
+            RecyclerMarketProductAdapter adapter = new RecyclerMarketProductAdapter(getContext(), posts);
+            recyclerView.setAdapter(adapter);
+            loading(false);
+            swipeRefreshLayout.setRefreshing(false);
+        }));
+
+        final FloatingActionButton addPost = inflate.findViewById(R.id.addPost);
+
+        addPost.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AddProductActivity.class);
+            startActivity(intent);
+        });
         return inflate;
     }
     private void loading(boolean loading){

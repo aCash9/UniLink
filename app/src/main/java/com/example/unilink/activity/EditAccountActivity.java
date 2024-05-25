@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,10 +49,12 @@ public class EditAccountActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private StorageReference storageReference;
-    private TextView chooseImage, updateImage;
+    private ImageButton chooseImage;
+    private Button updateImage;
     private Uri uriImage;
     private ImageButton backBtn;
 
+    private CardView cardView;
     private Button saveChanges;
 
     private EditText name, email, username;
@@ -77,6 +80,8 @@ public class EditAccountActivity extends AppCompatActivity {
         userImage = findViewById(R.id.userImage);
         chooseImage = findViewById(R.id.chooseImage);
         updateImage = findViewById(R.id.updateImage);
+
+        cardView = findViewById(R.id.cardView);
 
         backBtn = findViewById(R.id.back_btn);
         backBtn.setOnClickListener(v -> finish());
@@ -133,9 +138,9 @@ public class EditAccountActivity extends AppCompatActivity {
         }
 
 
-        chooseImage.setOnClickListener(v -> {
-            mGETcontent.launch("image/*");
-        });
+        chooseImage.setOnClickListener(v -> mGETcontent.launch("image/*"));
+
+        cardView.setOnClickListener(v -> mGETcontent.launch("image/*"));
 
         mGETcontent = registerForActivityResult(new ActivityResultContracts.GetContent(), o -> {
             Intent intent = new Intent(EditAccountActivity.this, CropperActivity.class);
