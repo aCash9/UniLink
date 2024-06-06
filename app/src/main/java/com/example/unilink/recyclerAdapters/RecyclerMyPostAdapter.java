@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,13 +80,20 @@ public class RecyclerMyPostAdapter extends RecyclerView.Adapter<RecyclerMyPostAd
         });
 
         holder.delete.setOnClickListener(v -> {
-            controller.deleteUserPost(list.get(position).getPostID(), list.get(position).getPostImageURL(), response -> {
-                list.remove(position);
-                notifyItemRemoved(position);
-            });
+            if (position >= 0 && position < list.size()) {
+                controller.deleteUserPost(list.get(position).getPostID(), list.get(position).getPostImageURL(), response -> {
+                    if (response) {
+                        list.remove(position);
+                        notifyItemRemoved(position);
+                        if (!list.isEmpty()) {
+                            notifyItemRangeChanged(position, list.size());
+                        }
+                    }
+                });
+            }
         });
-    }
 
+    }
     @Override
     public int getItemCount() {
         return list.size();

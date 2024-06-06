@@ -10,6 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
@@ -24,6 +25,7 @@ public class UserPostFragment extends Fragment {
     private FirebaseController controller;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView noPost;
 
     String userUID;
     public UserPostFragment(String userID) {
@@ -38,13 +40,18 @@ public class UserPostFragment extends Fragment {
         recyclerView = inflate.findViewById(R.id.recyclerView);
         swipeRefreshLayout = inflate.findViewById(R.id.swipeRefreshLayout);
         controller = new FirebaseController();
-
+        noPost = inflate.findViewById(R.id.noPost);
         recyclerView = inflate.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         controller.getMyPosts(userUID, posts -> {
-            RecyclerSearchedUserPostAdapter adapter = new RecyclerSearchedUserPostAdapter(getContext(), posts);
-            recyclerView.setAdapter(adapter);
+            if(posts.isEmpty()) {
+                noPost.setVisibility(View.VISIBLE);
+            } else {
+                RecyclerSearchedUserPostAdapter adapter = new RecyclerSearchedUserPostAdapter(getContext(), posts);
+                recyclerView.setAdapter(adapter);
+                noPost.setVisibility(View.GONE);
+            }
         });
 
         swipeRefreshLayout.setOnRefreshListener(() -> {

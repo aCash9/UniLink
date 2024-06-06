@@ -3,6 +3,7 @@ package com.example.unilink.activity.events;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,9 +30,17 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
+import com.example.unilink.DownloadImageTask;
+import com.example.unilink.MyScheduledWorker;
 import com.example.unilink.R;
+import com.example.unilink.RoomDatabase.DatabaseHelper;
+import com.example.unilink.RoomDatabase.dao.ClubsDao;
+import com.example.unilink.RoomDatabase.objects.ClubsInfo;
 import com.example.unilink.firebase.FirebaseController;
+import com.example.unilink.objects.ClubEventCard;
 import com.example.unilink.objects.Event;
 import com.example.unilink.recyclerAdapters.RecyclerClubsAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,7 +48,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class EventsActivity extends AppCompatActivity {
 
@@ -53,6 +67,8 @@ public class EventsActivity extends AppCompatActivity {
     private boolean animFlag = false;
     private Dialog dialog;
     private ImageView image;
+    private DatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +87,38 @@ public class EventsActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        controller.getClubsCard(list -> {
-            RecyclerClubsAdapter adapter = new RecyclerClubsAdapter(this, list);
+
+        databaseHelper = DatabaseHelper.getDB(this);
+        ClubsDao clubsDao = databaseHelper.clubsDao();
+        List<ClubsInfo> listOfClubs = clubsDao.getAll();
+
+//        clubsDao.deleteAll();
+
+        scheduleDailyWorker();
+
+        if(listOfClubs.isEmpty()) {
+            controller.getClubsCard(list -> {
+                RecyclerClubsAdapter<ClubEventCard> adapter = new RecyclerClubsAdapter<>(this, list);
+                recyclerView.setAdapter(adapter);
+
+                List<ClubsInfo> offlineList = new ArrayList<>();
+                int counter = 0;
+                for(ClubEventCard club : list) {
+                    new DownloadImageTask(this, String.valueOf(counter)).execute(club.getBannerURL());
+                    ClubsInfo clubsInfo = new ClubsInfo(String.valueOf(getImageFile(String.valueOf(counter), this)), club.getClubUID());
+                    offlineList.add(clubsInfo);
+                    counter++;
+                }
+
+                clubsDao.insertAll(offlineList);
+
+            });
+        } else {
+            ArrayList<ClubsInfo> clubsInfoArrayList = new ArrayList<>(listOfClubs);
+            RecyclerClubsAdapter<ClubsInfo> adapter = new RecyclerClubsAdapter<>(this, clubsInfoArrayList);
             recyclerView.setAdapter(adapter);
-        });
+        }
+
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             controller.getClubsCard(list -> {
@@ -242,5 +286,28 @@ public class EventsActivity extends AppCompatActivity {
             image.setImageURI(selectedImageUri);
         }
     }
+    private File getImageFile(String name, Context context) {
+        return new File(context.getFilesDir(), name);
+    }
 
+    public void scheduleDailyWorker() {
+        Calendar currentDate = Calendar.getInstance();
+        Calendar dueDate = Calendar.getInstance();
+
+        dueDate.set(Calendar.HOUR_OF_DAY, 12);
+        dueDate.set(Calendar.MINUTE, 0);
+        dueDate.set(Calendar.SECOND, 0);
+
+        if (dueDate.before(currentDate)) {
+            dueDate.add(Calendar.HOUR_OF_DAY, 24);
+        }
+
+        long timeDiff = dueDate.getTimeInMillis() - currentDate.getTimeInMillis();
+
+        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(MyScheduledWorker.class, 24, TimeUnit.HOURS)
+                .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(this).enqueue(periodicWorkRequest);
+    }
 }

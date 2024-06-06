@@ -18,6 +18,7 @@ import com.example.unilink.activity.ContributeActivity;
 import com.example.unilink.activity.HelpActivity;
 import com.example.unilink.activity.MainActivity;
 import com.example.unilink.activity.MyAccountActivity;
+import com.example.unilink.activity.MyPostingActivity;
 import com.example.unilink.activity.NotesActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -28,7 +29,7 @@ public class SettingsFragment extends Fragment {
     }
 
     TextView akash, suraj;
-    Button account, notes, help, contribute;
+    Button account, notes, help, contribute, marketplacePosting;
     Button logout;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,6 +43,7 @@ public class SettingsFragment extends Fragment {
         account = inflate.findViewById(R.id.account);
         notes = inflate.findViewById(R.id.notes);
         help = inflate.findViewById(R.id.help);
+        marketplacePosting = inflate.findViewById(R.id.marketplacePosting);
         contribute = inflate.findViewById(R.id.contribute);
         logout = inflate.findViewById(R.id.logout);
 
@@ -54,6 +56,11 @@ public class SettingsFragment extends Fragment {
 
         account.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), MyAccountActivity.class);
+            startActivity(intent);
+        });
+
+        marketplacePosting.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), MyPostingActivity.class);
             startActivity(intent);
         });
 

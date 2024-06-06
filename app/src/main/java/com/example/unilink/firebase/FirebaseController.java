@@ -93,9 +93,10 @@ public class FirebaseController {
                             callback.onProfileLoaded(profile);
                         }
                     });
+        } else {
+            UserProfile profile = new UserProfile("Error", "Error", "", false, "", "");
+            callback.onProfileLoaded(profile);
         }
-        UserProfile profile = new UserProfile("Error", "Error", "", false, "", "");
-        callback.onProfileLoaded(profile);
     }
 
     public void checkIfUsernameExists(String username, booleanCallback callback) {
@@ -206,27 +207,6 @@ public class FirebaseController {
             docRef.delete();
     }
 
-    public Task<Void> PostLikeOperationDemo(boolean op, int code, String postID, String uid) {
-        Map<String, Object> likeData = new HashMap<>();
-        likeData.put("userId", uid);
-        likeData.put("timestamp", FieldValue.serverTimestamp());
-        DocumentReference docRef;
-        if (code == 0) {
-            docRef = postCol.document(postID).collection("likes").document(uid);
-        } else if (code == 1) {
-            docRef = clubPostCol.document(postID).collection("likes").document(uid);
-        } else {
-            docRef = reelsCol.document(postID).collection("likes").document(uid);
-        }
-
-        changeLike(op, code, postID);
-        if (op)
-            return docRef.set(likeData);
-        else
-            return docRef.delete();
-    }
-
-
     public void checkIfAlreadyLiked(int code, String postID, String uid, booleanCallback callback) {
         DocumentReference docRef;
         switch (code) {
@@ -286,6 +266,9 @@ public class FirebaseController {
     public void getMyPosts(String uid, UserPostsCallback callback) {
         ArrayList<UserPosts> posts = new ArrayList<>();
 
+        if(uid == null) {
+            return;
+        }
         userUploadsCol.document(uid).collection("posts")
                 .get()
                 .addOnCompleteListener(task1 -> {
@@ -307,6 +290,7 @@ public class FirebaseController {
         ArrayList<Product> list = new ArrayList<>();
         if (auth.getCurrentUser() != null) {
             productsCol.whereEqualTo("userUID", auth.getCurrentUser().getUid())
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -324,6 +308,8 @@ public class FirebaseController {
 
     public void getMyReels(String uid, UserPostsCallback callback) {
         ArrayList<UserPosts> posts = new ArrayList<>();
+
+        if(uid == null) return;
 
         userUploadsCol.document(uid).collection("reels")
                 .get()
@@ -561,7 +547,8 @@ public class FirebaseController {
 
     public void getMarketPlaceProducts(ProductListCallback callback) {
         ArrayList<Product> clubs = new ArrayList<>();
-        productsCol.get()
+        productsCol.orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         if (!task.getResult().isEmpty()) {

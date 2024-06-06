@@ -81,8 +81,22 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
             }
         });
 
+        holder.like.setOnClickListener(v -> {
+            if(liked) {
+                controller.PostLikeOperation(false,0, list.get(position).getPostID(), user.getUid());
+                controller.removeLikeToUserPost(list.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_white);
+                holder.likes_counter.setText(String.valueOf(list.get(position).getLike() - 1));
+                controller.changeLike(false,0, list.get(position).getPostID());
+            } else {
+                controller.PostLikeOperation(true, 0, list.get(position).getPostID(), user.getUid());
+                controller.addLikeToUserPost(list.get(position));
+                holder.like.setImageResource(R.drawable.living_filled_red);
+                holder.likes_counter.setText(String.valueOf(list.get(position).getLike() + 1));
+                controller.changeLike(true, 0, list.get(position).getPostID());
+            }
+        });
 
-        holder.like.setOnClickListener(v -> {handleLikeButtonClick(list.get(position), holder);});
         holder.share.setOnClickListener(v -> {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
@@ -90,31 +104,6 @@ public class RecyclerPostAdapter extends RecyclerView.Adapter<RecyclerPostAdapte
 
             context.startActivity(Intent.createChooser(shareIntent, "Share Image URL"));
         });
-    }
-
-    private void handleLikeButtonClick(UserPosts userPosts, ViewHolder holder) {
-        if(liked) {
-            holder.like.setImageResource(R.drawable.living_filled_white);
-            holder.likes_counter.setText(String.valueOf(userPosts.getLike() - 1));
-        } else {
-            holder.like.setImageResource(R.drawable.living_filled_red);
-            holder.likes_counter.setText(String.valueOf(userPosts.getLike() + 1));
-        }
-
-        controller.PostLikeOperationDemo(!liked, 0, userPosts.getPostID(), user.getUid())
-                .addOnCompleteListener(task -> {
-                    if(!task.isSuccessful()) {
-                        if(liked) {
-                            holder.like.setImageResource(R.drawable.living_filled_red);
-                            holder.likes_counter.setText(String.valueOf(userPosts.getLike() + 1));
-                        } else {
-                            holder.like.setImageResource(R.drawable.living_filled_white);
-                            holder.likes_counter.setText(String.valueOf(userPosts.getLike() - 1));
-                        }
-                    } else {
-                        liked = !liked;
-                    }
-                });
     }
 
     @Override

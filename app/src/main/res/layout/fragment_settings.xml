@@ -148,6 +148,30 @@
                 android:layout_height="1dp"
                 android:layout_below="@+id/contribute"
                 android:background="@color/white"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:orientation="horizontal"
+                />
+
+            <Button
+                android:id="@+id/marketplacePosting"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="My Postings"
+                android:textColor="@color/white"
+                android:textAlignment="textStart"
+                android:layout_marginStart="20dp"
+                android:layout_below="@id/line5"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/line7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/marketplacePosting"
+                android:background="@color/white"
                 android:orientation="horizontal"
                 />
 
@@ -163,7 +187,7 @@
                 android:textAllCaps="false"
                 android:layout_marginTop="20dp"
                 android:textSize="18sp"
-                android:layout_below="@+id/line5"/>
+                android:layout_below="@+id/line7"/>
 
         </RelativeLayout>
     </ScrollView>

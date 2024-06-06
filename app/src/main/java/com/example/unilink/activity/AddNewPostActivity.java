@@ -40,7 +40,6 @@ import java.util.UUID;
 
 public class AddNewPostActivity extends AppCompatActivity {
 
-    private ImageButton backbtn;
     private ImageView image;
     private Button uploadUser, uploadClub;
     private Uri uriImage;
@@ -48,6 +47,7 @@ public class AddNewPostActivity extends AppCompatActivity {
     private StorageReference storageReference;
 
     private UserProfile profile;
+    private ImageButton backbtn;
     private FirebaseController controller;
     private LottieAnimationView lottieAnimationView;
     private View darkBackground;
@@ -65,11 +65,11 @@ public class AddNewPostActivity extends AppCompatActivity {
             return insets;
         });
 
-        backbtn = findViewById(R.id.back_btn);
         image = findViewById(R.id.image);
         uploadUser = findViewById(R.id.uploadUser);
         uploadClub = findViewById(R.id.uploadClub);
         caption = findViewById(R.id.caption);
+        backbtn = findViewById(R.id.back_btn);
         lottieAnimationView = findViewById(R.id.animationView);
         darkBackground = findViewById(R.id.darkBackground);
         profile = new UserProfile();

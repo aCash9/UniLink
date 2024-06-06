@@ -117,10 +117,20 @@ public class MyReelsAdapter extends RecyclerView.Adapter<MyReelsAdapter.VideoVie
             context.startActivity(Intent.createChooser(shareIntent, "Share Image URL"));
         });
 
-        holder.delete.setOnClickListener(v -> controller.deleteUserReels(videos.get(position).getPostID(), videos.get(position).getPostImageURL(), response -> {
-            videos.remove(position);
-            notifyItemRemoved(position);
-        }));
+
+        holder.delete.setOnClickListener(v -> {
+            if (position >= 0 && position < videos.size()) {
+                controller.deleteUserPost(videos.get(position).getPostID(), videos.get(position).getPostImageURL(), response -> {
+                    if (response) {
+                        videos.remove(position);
+                        notifyItemRemoved(position);
+                        if (!videos.isEmpty()) {
+                            notifyItemRangeChanged(position, videos.size());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override

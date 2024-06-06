@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Button;
@@ -24,6 +25,9 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.unilink.RoomDatabase.DatabaseHelper;
+import com.example.unilink.RoomDatabase.dao.UserDao;
+import com.example.unilink.RoomDatabase.objects.UserInfo;
 import com.example.unilink.firebase.FirebaseController;
 import com.example.unilink.R;
 import com.example.unilink.viewPagerAdapter.ViewPagerMyPostAdapter;
@@ -32,16 +36,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 public class MyAccountActivity extends AppCompatActivity {
-    private FirebaseController controller;
-    private ImageButton backButton;
     private TextView username, name;
-    private ImageView profileImage;
 
-    private FirebaseUser user;
-    private Button editProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +54,12 @@ public class MyAccountActivity extends AppCompatActivity {
             return insets;
         });
 
-        controller = new FirebaseController();
-        backButton = findViewById(R.id.back_btn);
+        FirebaseController controller = new FirebaseController();
+        ImageButton backButton = findViewById(R.id.back_btn);
         username = findViewById(R.id.username);
-        profileImage = findViewById(R.id.userImage);
+        ImageView profileImage = findViewById(R.id.userImage);
         name = findViewById(R.id.name);
-        editProfile = findViewById(R.id.editProfile);
+        Button editProfile = findViewById(R.id.editProfile);
 
         editProfile.setOnClickListener(v -> {
             Intent intent = new Intent(MyAccountActivity.this, EditAccountActivity.class);
@@ -66,21 +67,29 @@ public class MyAccountActivity extends AppCompatActivity {
         });
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        FirebaseUser user = auth.getCurrentUser();
 
-        Uri uri = user.getPhotoUrl();
-        if (uri != null) {
-            Log.d("MyAccountActivity", "Profile image URI: " + uri.toString());
-            Picasso.get().load(uri).into(profileImage);
+
+        DatabaseHelper databaseHelper = DatabaseHelper.getDB(this);
+
+        UserDao userDao = databaseHelper.userDao();
+        List<UserInfo> userData = userDao.getAll();
+//        userDao.deleteAll();
+        if(userData.isEmpty()) {
+            Uri uri = user.getPhotoUrl();
+            if (uri != null) {
+                Picasso.get().load(uri).into(profileImage);
+            }
+            controller.getUserData(userProfile -> {
+                username.setText(userProfile.getUsername());
+                name.setText(userProfile.getName());
+            });
         } else {
-            Log.d("MyAccountActivity", "No profile image URI found.");
+            UserInfo userInfo = userData.get(0);
+            username.setText(userInfo.getUsername());
+            name.setText(userInfo.getName());
+            loadImageIntoImageView(userInfo.getUserImageUri() , profileImage);
         }
-
-
-        controller.getUserData(userProfile -> {
-            username.setText(userProfile.getUsername());
-            name.setText(userProfile.getName());
-        });
 
         backButton.setOnClickListener(v -> finish());
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -90,25 +99,12 @@ public class MyAccountActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
 
         tabLayout.setupWithViewPager(viewPager);
-
-        controller.getUserDataUsingUID(user.getUid(), userProfile -> {
-            username.setText(userProfile.getUsername());
-            name.setText(userProfile.getName());
-        });
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        controller.getUserDataUsingUID(user.getUid(), userProfile -> {
-            username.setText(userProfile.getUsername());
-            name.setText(userProfile.getName());
-
-            if(userProfile.getUserImageURI() != null && !Objects.equals(userProfile.getUserImageURI(), "")) {
-                Picasso.get().load(userProfile.getUserImageURI()).into(profileImage);
-            }
-
-        });
+    private void loadImageIntoImageView(String filePath, ImageView imageView) {
+        Glide.with(this)
+                .load(filePath)
+                .into(imageView);
     }
 }
 
